@@ -1,6 +1,6 @@
-import copy
 import time
 from srcs.npuzzle import Npuzzle, Direction
+import numpy as np
 
 
 class Astar:
@@ -10,6 +10,7 @@ class Astar:
 	def __init__(self, original: Npuzzle):
 		self.og = original
 		Astar.arr.append(self.og)
+		Astar.old_gamestates.add(np.array2string(self.og.rows.flatten()))
 
 	def do_moves(self, state: Npuzzle):
 		for direction in Direction:
@@ -19,7 +20,7 @@ class Astar:
 				newstate = Npuzzle()
 				newstate.give_copy(state)
 				Astar.arr.append(newstate.do_move(direction, Astar.old_gamestates))
-			except AssertionError:
+			except (AssertionError, KeyError):
 				pass
 
 	def spawn_new_generation(self) -> bool:
