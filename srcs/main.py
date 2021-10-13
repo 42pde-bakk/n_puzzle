@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 import sys
 from srcs.npuzzle import Npuzzle
+from srcs.Astar import Astar
 
 
 def main(npuzzle_file):
 	with open(npuzzle_file, 'r') as f:
-		n = Npuzzle(f.read().splitlines())
+		n = Npuzzle()
+		n.parse_puzzle(f.read().splitlines())
+	astar = Astar(n)
+	astar.solve()
 
 
 if __name__ == "__main__":
