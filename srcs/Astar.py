@@ -1,4 +1,5 @@
 import copy
+import time
 from srcs.npuzzle import Npuzzle, Direction
 
 
@@ -15,7 +16,8 @@ class Astar:
 			try:
 				state.is_possible(direction)
 				# My hypothesis is it's faster to check that it is possible to avoid doing an unnecessary deepcopy
-				newstate = copy.deepcopy(state)
+				newstate = Npuzzle()
+				newstate.give_copy(state)
 				Astar.arr.append(newstate.do_move(direction, Astar.old_gamestates))
 			except AssertionError:
 				pass
@@ -30,15 +32,16 @@ class Astar:
 		return False
 
 	def solve(self):
+		start_time = time.time()
 		generation_amount = 0
 		has_solution = False
-		while not has_solution and generation_amount < 901228:
+		while not has_solution and generation_amount < 11:
 			has_solution = self.spawn_new_generation()
-			print(f'generation_amount = {generation_amount}, has_solution = {has_solution}')
+			print(f'generation_amount = {generation_amount}, has_solution = {has_solution}. Next iteration has {len(Astar.arr)} gamestates')
 			generation_amount += 1
+		print(f'Ran {generation_amount} loops in {time.time() - start_time}s.')
 		if has_solution:
 			print(f'solution = {Astar.arr[-1]}')
-		else:
-			for item in Astar.arr:
-				print(item)
-
+		# else:
+		# 	for item in Astar.arr:
+		# 		print(item)

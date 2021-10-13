@@ -2,7 +2,6 @@ import numpy as np
 import sys
 from srcs.parsing.parsing_file import parse_header, parserow, assert_validity
 import enum
-from collections import defaultdict
 
 
 class Direction(enum.IntEnum):
@@ -33,6 +32,13 @@ class Npuzzle:
 		self.zero_pos = (0, 0)
 		self.rows = np.ndarray
 		self.value = ''
+
+	def give_copy(self, x):
+		self.size = x.size
+		self.moves = x.moves
+		self.zero_pos = x.zero_pos
+		self.rows = x.rows
+		self.value = x.value
 
 	def parse_puzzle(self, rows: list[str]):
 		self.size = 0
