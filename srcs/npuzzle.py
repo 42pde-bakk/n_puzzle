@@ -1,6 +1,5 @@
 import sys
 import enum
-import numpy as np
 from srcs.parsing.parsing_file import parse_header, parserow, assert_validity
 
 
