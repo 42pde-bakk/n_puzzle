@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 from srcs.npuzzle import Npuzzle
 from srcs.Astar import Astar
