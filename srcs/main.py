@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 import sys
 from srcs.npuzzle import Npuzzle
-from srcs.Astar import Astar
+from srcs.astar import Astar
 
 
 def main(npuzzle_file):
 	with open(npuzzle_file, 'r') as f:
-		n = Npuzzle()
-		n.parse_puzzle(f.read().splitlines())
-	astar = Astar(n)
+		puzzle = Npuzzle()
+		puzzle.parse_puzzle(f.read().splitlines())
+	astar = Astar(puzzle)
 	astar.solve()
 
 
