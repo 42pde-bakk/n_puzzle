@@ -1,7 +1,7 @@
-import numpy as np
 import sys
-from srcs.parsing.parsing_file import parse_header, parserow, assert_validity
 import enum
+import numpy as np
+from srcs.parsing.parsing_file import parse_header, parserow, assert_validity
 
 
 class Direction(enum.IntEnum):
@@ -14,9 +14,9 @@ class Direction(enum.IntEnum):
 def get_movepos(zero_pos: tuple[int, int], direction: Direction) -> tuple[int, int]:
 	x, y = zero_pos
 
-	if direction == Direction.UP or direction == Direction.DOWN:
+	if direction in (Direction.UP, Direction.DOWN):
 		y = (y - 1) if direction == Direction.UP else (y + 1)
-	elif direction == Direction.LEFT or direction == Direction.RIGHT:
+	elif direction in (Direction.LEFT, Direction.RIGHT):
 		x = (x - 1) if direction == Direction.LEFT else (x + 1)
 	return x, y
 
@@ -26,6 +26,7 @@ def is_sorted(arr: np.ndarray) -> bool:
 
 
 class Npuzzle:
+	"""Class to contain information about the current state of the puzzle"""
 	def __init__(self) -> None:
 		self.size = 0
 		self.moves = 0
@@ -54,13 +55,14 @@ class Npuzzle:
 				if item == 0:
 					print(f'zero_pos = ({x}, {y})')
 					return x, y
+		raise IndexError
 
 	def addrow(self, row: str) -> list:
 		if self.size == 0:
 			try:
 				self.set_size(parse_header(row))
 			except IndexError:
-				return list()
+				return []
 		else:
 			try:
 				parsed_row = parserow(row)
@@ -68,6 +70,7 @@ class Npuzzle:
 			except (AssertionError, ValueError) as e:
 				print(f'row {row} is invalid.', file=sys.stderr)
 				raise e
+		return []
 
 	def readrows(self, rows: list[str]) -> np.ndarray:
 		return np.array([temp for row in rows if (temp := self.addrow(row))])
@@ -101,9 +104,9 @@ class Npuzzle:
 		return self
 
 	def __str__(self):
-		s = f'{self.rows}\n'
+		string = f'{self.rows}\n'
 		if self.is_solved():
-			s += 'Solved '
+			string += 'Solved '
 		else:
-			s += 'Unsolved '
-		return s + f'in {self.moves} steps.'
+			string += 'Unsolved '
+		return string + f'in {self.moves} steps.'
