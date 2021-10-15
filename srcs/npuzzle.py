@@ -2,7 +2,6 @@ import numpy as np
 import sys
 from srcs.parsing.parsing_file import parse_header, parserow, assert_validity
 import enum
-from collections import defaultdict
 
 
 class Direction(enum.IntEnum):
@@ -32,7 +31,12 @@ class Npuzzle:
 		self.moves = 0
 		self.zero_pos = (0, 0)
 		self.rows = np.ndarray
-		self.value = ''
+
+	def give_copy(self, x):
+		self.size = x.size
+		self.moves = x.moves
+		self.zero_pos = x.zero_pos
+		self.rows = x.rows
 
 	def parse_puzzle(self, rows: list[str]):
 		self.size = 0
@@ -40,7 +44,6 @@ class Npuzzle:
 		self.zero_pos = self.find_zero_pos()  # Tuple[xcoord, ycoord]
 		print(f'og is:\n{self.rows}')
 		assert_validity(self.size, self.rows)
-		self.value = np.array2string(self.rows.flatten())
 
 	def set_size(self, size: int):
 		self.size = size
@@ -90,8 +93,11 @@ class Npuzzle:
 			self.rows[move_pos[1]][move_pos[0]], self.rows[self.zero_pos[1]][self.zero_pos[0]]
 		self.zero_pos = move_pos
 		self.moves += 1
-		self.value = np.array2string(self.rows.flatten())
-		assert self.value not in old_gamestates
+
+		value = np.array2string(self.rows.flatten())
+		if value in old_gamestates:
+			raise KeyError
+		old_gamestates.add(value)
 		return self
 
 	def __str__(self):
