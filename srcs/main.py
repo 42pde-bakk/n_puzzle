@@ -2,13 +2,14 @@
 import sys
 from srcs.npuzzle import Npuzzle
 from srcs.astar import Astar
+from srcs.heuristics import manhattan_distance
 
 
 def main(npuzzle_file):
 	with open(npuzzle_file, 'r') as f:
 		puzzle = Npuzzle()
 		puzzle.parse_puzzle(f.read().splitlines())
-	astar = Astar(puzzle)
+	astar = Astar(puzzle, manhattan_distance)
 	astar.solve()
 
 
