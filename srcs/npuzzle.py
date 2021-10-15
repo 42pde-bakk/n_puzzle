@@ -10,6 +10,9 @@ class Direction(enum.IntEnum):
 	DOWN = 2  # 0-pos changes with same pos in row below (zero-pos
 	LEFT = 3  # 0-pos changes with pos-1
 
+	def __str__(self):
+		return self.name
+
 
 def get_movepos(zero_pos: tuple[int, int], direction: Direction) -> tuple[int, int]:
 	x, y = zero_pos
@@ -29,7 +32,7 @@ class Npuzzle:
 	"""Class to contain information about the current state of the puzzle"""
 	def __init__(self) -> None:
 		self.size = 0
-		self.moves = 0
+		self.moves = 7
 		self.zero_pos = (0, 0)
 		self.rows = np.ndarray
 
@@ -43,8 +46,11 @@ class Npuzzle:
 		self.size = 0
 		self.rows = self.readrows(rows)
 		self.zero_pos = self.find_zero_pos()  # Tuple[xcoord, ycoord]
-		print(f'og is:\n{self.rows}')
+		print(f'og is:\n{self.rows}\n\n')
 		assert_validity(self.size, self.rows)
+
+	def __lt__(self, other):
+		return self.moves < self.moves
 
 	def set_size(self, size: int):
 		self.size = size
@@ -53,7 +59,6 @@ class Npuzzle:
 		for y, row in enumerate(self.rows):
 			for x, item in enumerate(row):
 				if item == 0:
-					print(f'zero_pos = ({x}, {y})')
 					return x, y
 		raise IndexError
 
@@ -90,18 +95,29 @@ class Npuzzle:
 		flattened_puzzle = self.rows.flatten()
 		return flattened_puzzle[-1] == 0 and is_sorted(flattened_puzzle[:-1])
 
+	def add_move(self, direction: Direction) -> None:
+		self.moves *= 10
+		self.moves += int(direction)
+
 	def do_move(self, direction: Direction, old_gamestates: set):
 		move_pos = get_movepos(zero_pos=self.zero_pos, direction=direction)
 		self.rows[self.zero_pos[1]][self.zero_pos[0]], self.rows[move_pos[1]][move_pos[0]] = \
 			self.rows[move_pos[1]][move_pos[0]], self.rows[self.zero_pos[1]][self.zero_pos[0]]
 		self.zero_pos = move_pos
-		self.moves += 1
+		self.add_move(direction)
 
-		value = np.array2string(self.rows.flatten())
+		value = int(''.join(map(str, self.rows.flatten())))
 		if value in old_gamestates:
 			raise KeyError
 		old_gamestates.add(value)
 		return self
+
+	def extract_move_sequence(self) -> list[str]:
+		move_sequence = str(self.moves).replace('7', '')
+		return [Direction(int(move)) for move in move_sequence]
+
+	def move_amount(self) -> int:
+		return len(str(self.moves)) - 1
 
 	def __str__(self):
 		string = f'{self.rows}\n'
@@ -109,4 +125,6 @@ class Npuzzle:
 			string += 'Solved '
 		else:
 			string += 'Unsolved '
-		return string + f'in {self.moves} steps.'
+		string += f'in {len(str(self.moves)) - 1} steps.\n'
+		string += f'Move sequence is {str(self.extract_move_sequence())}.\n'
+		return string
