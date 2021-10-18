@@ -1,5 +1,13 @@
 import numpy as np
-from typing import List
+from typing import List, Tuple
+
+
+def is_even(nb: int) -> bool:
+	return nb % 2 == 0
+
+
+def is_odd(nb: int) -> bool:
+	return not is_even(nb)
 
 
 def clean_row(row: str) -> List[str]:
