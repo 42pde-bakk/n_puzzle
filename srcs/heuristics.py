@@ -4,7 +4,7 @@ from srcs.npuzzle import Npuzzle
 g_puzzle_size = 0
 
 
-def calc_manhattan_dist(enumeration_tuple) -> int:
+def calc_individual_mannh_dist(enumeration_tuple) -> int:
 	y_pos, x_pos = enumeration_tuple[0]
 	ideal_pos = enumeration_tuple[1] - 1
 	if enumeration_tuple[1] == 0:
@@ -25,7 +25,7 @@ def calc_minkowski_distance(enumeration_tuple, p) -> int:
 def manhattan_distance(gamestate: Npuzzle) -> int:
 	global g_puzzle_size
 	g_puzzle_size = gamestate.size
-	return sum(map(calc_manhattan_dist, np.ndenumerate(gamestate.rows)))
+	return sum(map(calc_individual_mannh_dist, np.ndenumerate(gamestate.rows)))
 
 
 def minkowski_distance(gamestate: Npuzzle, p) -> int:

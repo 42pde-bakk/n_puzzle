@@ -46,6 +46,7 @@ class Npuzzle:
 	def parse_puzzle(self, rows: List[str]):
 		self.size = 0
 		self.rows = self.readrows(rows)
+		print(type(self.rows), type(self.rows[0]), self.rows[0].dtype)
 		self.zero_pos = self.find_zero_pos()  # Tuple[xcoord, ycoord]
 		print(f'og is:\n{self.rows}\n\n')
 
@@ -78,7 +79,7 @@ class Npuzzle:
 		return []
 
 	def readrows(self, rows: List[str]) -> np.ndarray:
-		return np.array([temp for row in rows if (temp := self.addrow(row))])
+		return np.array([temp for row in rows if (temp := np.array(self.addrow(row))).size])
 
 	def is_possible(self, direction: Direction) -> bool:
 		if direction == Direction.UP:

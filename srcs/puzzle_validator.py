@@ -38,6 +38,7 @@ class PuzzleValidator:
 			for j in range(i + 1, puzzle.size ** 2):
 				if flattened_puzzle[i] > flattened_puzzle[j] != 0 and flattened_puzzle[i] != 0:
 					inversion_count += 1
+		print(f'inverison_count is {inversion_count}, position from bottom is {puzzle.size - puzzle.zero_pos[0]}')
 		if is_odd(puzzle.size) and is_even(inversion_count):
 			return True
 		elif is_even(puzzle.size) and (is_even(puzzle.size - puzzle.zero_pos[0]) ^ is_odd(inversion_count)):
