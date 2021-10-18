@@ -13,6 +13,7 @@ def main(npuzzle_file):
 	if PuzzleValidator.is_valid(puzzle) and PuzzleValidator.is_solvable(puzzle):
 		astar = Astar(puzzle, manhattan_distance)
 		astar.solve()
+		print(astar.solution)
 	else:
 		print(f'Puzzle is not solvable')
 

@@ -2,7 +2,6 @@ import sys
 import enum
 import numpy as np
 from typing import Tuple, List
-
 from srcs.parsing.parsing_file import parse_header, parserow
 
 
@@ -100,17 +99,12 @@ class Npuzzle:
 		self.moves *= 10
 		self.moves += int(direction)
 
-	def do_move(self, direction: Direction, old_gamestates: set):
+	def do_move(self, direction: Direction):
 		move_pos = get_movepos(zero_pos=self.zero_pos, direction=direction)
 		self.rows[self.zero_pos[1]][self.zero_pos[0]], self.rows[move_pos[1]][move_pos[0]] = \
 			self.rows[move_pos[1]][move_pos[0]], self.rows[self.zero_pos[1]][self.zero_pos[0]]
 		self.zero_pos = move_pos
 		self.add_move(direction)
-
-		value = int(''.join(map(str, self.rows.flatten())))
-		if value in old_gamestates:
-			raise KeyError
-		old_gamestates.add(value)
 		return self
 
 	def extract_move_sequence(self) -> List[str]:
