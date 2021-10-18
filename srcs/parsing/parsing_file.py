@@ -1,7 +1,8 @@
 import numpy as np
+from typing import List
 
 
-def clean_row(row: str) -> list[str]:
+def clean_row(row: str) -> List[str]:
 	"""Remove whitespaces, discard everything after the first '#' and return the row as a list"""
 	return row.split(sep='#', maxsplit=1)[0].split()
 
@@ -12,7 +13,7 @@ def parse_header(row: str) -> int:
 	return int(cleaned_row[0])
 
 
-def parserow(row: str) -> list[int]:
+def parserow(row: str) -> List[int]:
 	"""Make sure the row is valid"""
 	cleaned_row = clean_row(row)
 	assert row

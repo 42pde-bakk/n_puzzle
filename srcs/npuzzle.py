@@ -1,6 +1,8 @@
 import sys
 import enum
 import numpy as np
+from typing import Tuple, List
+
 from srcs.parsing.parsing_file import parse_header, parserow, assert_validity
 
 
@@ -14,7 +16,7 @@ class Direction(enum.IntEnum):
 		return self.name
 
 
-def get_movepos(zero_pos: tuple[int, int], direction: Direction) -> tuple[int, int]:
+def get_movepos(zero_pos: Tuple[int, int], direction: Direction) -> Tuple[int, int]:
 	x, y = zero_pos
 
 	if direction in (Direction.UP, Direction.DOWN):
@@ -42,7 +44,7 @@ class Npuzzle:
 		self.zero_pos = x.zero_pos
 		self.rows = x.rows
 
-	def parse_puzzle(self, rows: list[str]):
+	def parse_puzzle(self, rows: List[str]):
 		self.size = 0
 		self.rows = self.readrows(rows)
 		self.zero_pos = self.find_zero_pos()  # Tuple[xcoord, ycoord]
@@ -55,7 +57,7 @@ class Npuzzle:
 	def set_size(self, size: int):
 		self.size = size
 
-	def find_zero_pos(self) -> tuple[int, int]:
+	def find_zero_pos(self) -> Tuple[int, int]:
 		for y, row in enumerate(self.rows):
 			for x, item in enumerate(row):
 				if item == 0:
@@ -77,7 +79,7 @@ class Npuzzle:
 				raise e
 		return []
 
-	def readrows(self, rows: list[str]) -> np.ndarray:
+	def readrows(self, rows: List[str]) -> np.ndarray:
 		return np.array([temp for row in rows if (temp := self.addrow(row))])
 
 	def is_possible(self, direction: Direction) -> bool:
@@ -112,7 +114,7 @@ class Npuzzle:
 		old_gamestates.add(value)
 		return self
 
-	def extract_move_sequence(self) -> list[str]:
+	def extract_move_sequence(self) -> List[str]:
 		move_sequence = str(self.moves).replace('7', '')
 		return [Direction(int(move)) for move in move_sequence]
 
