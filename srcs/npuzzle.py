@@ -1,7 +1,9 @@
 import sys
 import enum
 import numpy as np
-from srcs.parsing.parsing_file import parse_header, parserow, assert_validity
+from typing import Tuple, List
+
+from srcs.parsing.parsing_file import parse_header, parserow, assert_validity, is_even, is_odd
 
 
 class Direction(enum.IntEnum):
@@ -10,8 +12,11 @@ class Direction(enum.IntEnum):
 	DOWN = 2  # 0-pos changes with same pos in row below (zero-pos
 	LEFT = 3  # 0-pos changes with pos-1
 
+	def __str__(self):
+		return self.name
 
-def get_movepos(zero_pos: tuple[int, int], direction: Direction) -> tuple[int, int]:
+
+def get_movepos(zero_pos: Tuple[int, int], direction: Direction) -> Tuple[int, int]:
 	x, y = zero_pos
 
 	if direction in (Direction.UP, Direction.DOWN):
@@ -29,7 +34,7 @@ class Npuzzle:
 	"""Class to contain information about the current state of the puzzle"""
 	def __init__(self) -> None:
 		self.size = 0
-		self.moves = 0
+		self.moves = 7
 		self.zero_pos = (0, 0)
 		self.rows = np.ndarray
 
@@ -39,21 +44,23 @@ class Npuzzle:
 		self.zero_pos = x.zero_pos
 		self.rows = x.rows
 
-	def parse_puzzle(self, rows: list[str]):
+	def parse_puzzle(self, rows: List[str]):
 		self.size = 0
 		self.rows = self.readrows(rows)
 		self.zero_pos = self.find_zero_pos()  # Tuple[xcoord, ycoord]
-		print(f'og is:\n{self.rows}')
+		print(f'og is:\n{self.rows}\n\n')
 		assert_validity(self.size, self.rows)
+
+	def __lt__(self, other):
+		return self.moves < self.moves
 
 	def set_size(self, size: int):
 		self.size = size
 
-	def find_zero_pos(self) -> tuple[int, int]:
+	def find_zero_pos(self) -> Tuple[int, int]:
 		for y, row in enumerate(self.rows):
 			for x, item in enumerate(row):
 				if item == 0:
-					print(f'zero_pos = ({x}, {y})')
 					return x, y
 		raise IndexError
 
@@ -72,7 +79,7 @@ class Npuzzle:
 				raise e
 		return []
 
-	def readrows(self, rows: list[str]) -> np.ndarray:
+	def readrows(self, rows: List[str]) -> np.ndarray:
 		return np.array([temp for row in rows if (temp := self.addrow(row))])
 
 	def is_possible(self, direction: Direction) -> bool:
@@ -90,18 +97,29 @@ class Npuzzle:
 		flattened_puzzle = self.rows.flatten()
 		return flattened_puzzle[-1] == 0 and is_sorted(flattened_puzzle[:-1])
 
+	def add_move(self, direction: Direction) -> None:
+		self.moves *= 10
+		self.moves += int(direction)
+
 	def do_move(self, direction: Direction, old_gamestates: set):
 		move_pos = get_movepos(zero_pos=self.zero_pos, direction=direction)
 		self.rows[self.zero_pos[1]][self.zero_pos[0]], self.rows[move_pos[1]][move_pos[0]] = \
 			self.rows[move_pos[1]][move_pos[0]], self.rows[self.zero_pos[1]][self.zero_pos[0]]
 		self.zero_pos = move_pos
-		self.moves += 1
+		self.add_move(direction)
 
-		value = np.array2string(self.rows.flatten())
+		value = int(''.join(map(str, self.rows.flatten())))
 		if value in old_gamestates:
 			raise KeyError
 		old_gamestates.add(value)
 		return self
+
+	def extract_move_sequence(self) -> List[str]:
+		move_sequence = str(self.moves).replace('7', '')
+		return [Direction(int(move)) for move in move_sequence]
+
+	def move_amount(self) -> int:
+		return len(str(self.moves)) - 1
 
 	def __str__(self):
 		string = f'{self.rows}\n'
@@ -109,4 +127,21 @@ class Npuzzle:
 			string += 'Solved '
 		else:
 			string += 'Unsolved '
-		return string + f'in {self.moves} steps.'
+		string += f'in {len(str(self.moves)) - 1} steps.\n'
+		string += f'Move sequence is {str(self.extract_move_sequence())}.\n'
+		return string
+
+	def is_solvable(self) -> bool:
+		flattened_puzzle = list(self.rows.flatten())
+		inversion_count = 0
+		print(flattened_puzzle)
+		for i in range(0, self.size ** 2 - 1):
+			for j in range(i + 1, self.size ** 2):
+				if flattened_puzzle[i] > flattened_puzzle[j] != 0 and flattened_puzzle[i] != 0:
+					inversion_count += 1
+		if is_odd(self.size) and is_even(inversion_count):
+			return True
+		elif is_even(self.size) and (is_even(self.size - self.zero_pos[0]) ^ is_odd(inversion_count)):
+			# the ^ operator is a XOR gate
+			return True
+		return False
