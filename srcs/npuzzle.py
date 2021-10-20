@@ -6,13 +6,16 @@ from srcs.parsing.parsing_file import parse_header, parserow
 
 
 class Direction(enum.IntEnum):
-	UP = 0  # 0-pos changes with same pos in row above (zero-pos - size)
-	RIGHT = 1  # 0-pos swaps with pos+1 (zero-pos + 1)
-	DOWN = 2  # 0-pos changes with same pos in row below (zero-pos
-	LEFT = 3  # 0-pos changes with pos-1
+	DOWN = 0  # 0-pos changes with same pos in row below (zero-pos
+	LEFT = 1  # 0-pos changes with pos-1
+	UP = 2  # 0-pos changes with same pos in row above (zero-pos - size)
+	RIGHT = 3  # 0-pos swaps with pos+1 (zero-pos + 1)
 
 	def __str__(self) -> str:
 		return self.name
+
+	def __int__(self):
+		return self.value
 
 
 def get_movepos(zero_pos: Tuple[int, int], direction: Direction) -> Tuple[int, int]:
@@ -51,7 +54,7 @@ class Npuzzle:
 		print(f'og is:\n{self.rows}\n\n')
 
 	def __lt__(self, other):
-		return self.moves < self.moves
+		return self.move_amount() < other.move_amount()
 
 	def set_size(self, size: int):
 		self.size = size
@@ -79,7 +82,7 @@ class Npuzzle:
 		return []
 
 	def readrows(self, rows: List[str]) -> np.ndarray:
-		return np.array([temp for row in rows if (temp := np.array(self.addrow(row))).size])
+		return np.array([temp for row in rows if (temp := np.array(self.addrow(row), dtype=np.uint16)).size])
 
 	def is_possible(self, direction: Direction) -> bool:
 		if direction == Direction.UP:
@@ -112,8 +115,15 @@ class Npuzzle:
 		move_sequence = str(self.moves).replace('7', '')
 		return [str(Direction(int(move))) for move in move_sequence]
 
+	def extract_move_sequence_as_enums(self) -> List[Direction]:
+		move_sequence = str(self.moves).replace('7', '')
+		return [Direction(int(move)) for move in move_sequence]
+
 	def move_amount(self) -> int:
 		return len(str(self.moves)) - 1
+
+	def get_int_repr(self):
+		return int(''.join(map(str, self.rows.flatten())))
 
 	def __str__(self):
 		string = f'{self.rows}\n'

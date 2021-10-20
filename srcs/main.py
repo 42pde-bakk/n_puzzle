@@ -3,7 +3,7 @@ import sys
 from srcs.npuzzle import Npuzzle
 from srcs.astar import Astar
 from srcs.heuristics import manhattan_distance
-from srcs.puzzle_validator import PuzzleValidator
+from srcs.validator import PuzzleValidator
 
 
 def main(npuzzle_file):
@@ -13,7 +13,9 @@ def main(npuzzle_file):
 	if PuzzleValidator.is_valid(puzzle) and PuzzleValidator.is_solvable(puzzle):
 		astar = Astar(puzzle, manhattan_distance)
 		astar.solve()
+		print(f'lets run it again to check!')
 		print(astar.solution)
+		PuzzleValidator.check_solution(puzzle, astar.solution.extract_move_sequence_as_enums())
 	else:
 		print(f'Puzzle is not solvable')
 
