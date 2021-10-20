@@ -32,3 +32,8 @@ def minkowski_distance(gamestate: Npuzzle, p) -> int:
 	global g_puzzle_size
 	g_puzzle_size = gamestate.size
 	return sum(map(calc_minkowski_distance, np.ndenumerate(gamestate.rows))) ** (1 / p)
+
+
+def amount_in_place(gamestate: Npuzzle) -> int:
+	puzzle = gamestate.rows.flatten()
+	return gamestate.size ** 2 - 1 - sum([int(i + 1 == puzzle[i] and i != 0) for i in puzzle])

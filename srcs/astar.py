@@ -4,8 +4,6 @@ from srcs.npuzzle import Npuzzle, Direction
 import heapq
 BEAM_SIZE = 100
 
-duration = 0
-
 
 class Astar:
 	def __init__(self, original: Npuzzle, heuristic_func):
@@ -22,7 +20,7 @@ class Astar:
 		return self.heuristic_func(node) + node.move_amount()
 
 	def queue_node(self, node: Npuzzle) -> None:
-		state = int(''.join(map(str, node.rows.flatten())))
+		state = node.get_int_repr()
 		estimated_cost = self.estimate_cost(node)
 
 		try:
@@ -31,9 +29,10 @@ class Astar:
 		except KeyError:
 			pass
 		heapq.heappush(self.open_queue, (estimated_cost, node))
+		# print(f'after heappushing, heapq has size {len(self.open_queue)}')
 
 	def add_node_to_closed_queue(self, node: Npuzzle) -> None:
-		state = int(''.join(map(str, node.rows.flatten())))
+		state = node.get_int_repr()
 		estimated_cost = self.estimate_cost(node)
 		if state not in self.closed_queue or self.closed_queue[state] > estimated_cost:
 			self.closed_queue[state] = estimated_cost
@@ -42,10 +41,7 @@ class Astar:
 		for direction in Direction:
 			try:
 				state.is_possible(direction)
-				start_time = time.time()
 				newstate = copy.deepcopy(state)
-				global duration
-				duration += (time.time() - start_time)
 				# newstate = Npuzzle()
 				# newstate.give_copy(state)
 				newstate.do_move(direction)
@@ -62,7 +58,7 @@ class Astar:
 		"""Return value is to showcase whether we are at the end of our search
 			Either because we found a solution, or because we tried everything"""
 		heuristic_value, state = heapq.heappop(self.open_queue)
-		# print(f'EXPANDING\n{state}\nHeuristic_value={heuristic_value}')
+		print(f'EXPANDING\n{state}\nHeuristic_value={heuristic_value}')
 
 		if self.do_moves(state):
 			return True
@@ -72,12 +68,16 @@ class Astar:
 		start_time = time.time()
 		generation_amount = 0
 		has_solution = False
-		while not has_solution:
+		while not has_solution and generation_amount < 100:
 			has_solution = self.spawn_new_generation()
 			generation_amount += 1
 		if not has_solution:
 			print(f'queue still has size {len(self.open_queue)}')
-			while not self.open_queue.empty():
-				heuristic, state = self.open_queue.get()
-				print(f'heuristic={heuristic}, state=\n{state}')
-		print(f'Ran {generation_amount} loops in {time.time() - start_time}s. duration={duration}')
+			try:
+				while True:
+					heuristic, state = heapq.heappop(self.open_queue)
+					print(f'heuristic={heuristic}, state=\n{state}')
+			except IndexError:
+				pass
+		print(f'open_queue has size {len(self.open_queue)} and closed_queue has size {len(self.closed_queue)}')
+		print(f'Ran {generation_amount} loops in {time.time() - start_time}s.')

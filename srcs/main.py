@@ -2,7 +2,7 @@
 import sys
 from srcs.npuzzle import Npuzzle
 from srcs.astar import Astar
-from srcs.heuristics import manhattan_distance
+from srcs.heuristics import manhattan_distance, amount_in_place
 from srcs.validator import PuzzleValidator
 
 
