@@ -26,7 +26,7 @@ def get_movepos(zero_pos: Tuple[int, int], direction: Direction) -> Tuple[int, i
 	return x, y
 
 
-class Npuzzle:
+class Gamestate:
 	"""Class to contain information about the current state of the puzzle"""
 	def __init__(self) -> None:
 		self.size = 0
@@ -39,11 +39,11 @@ class Npuzzle:
 		self.size = x.size
 		self.moves = x.moves
 		self.zero_pos = x.zero_pos
-		self.rows = x.original_position
+		self.rows = x.rows
 		self.parent = x
 
 	def __eq__(self, other):
-		return np.array_equal(self.rows, other.original_position)
+		return np.array_equal(self.rows, other.rows)
 
 	def __lt__(self, other):
 		return self.move_amount() < other.move_amount()
@@ -69,9 +69,9 @@ class Npuzzle:
 			assert self.zero_pos[0] < self.size - 1
 		return True
 
-	def is_solved(self) -> bool:
-		spiral_arr = spiral_traversal(self.rows)
-		return np.all(spiral_arr[:-1] <= spiral_arr[1:]) and spiral_arr[-1] == 0
+	# def is_solved(self) -> bool:
+	# 	spiral_arr = spiral_traversal(self.rows)
+	# 	return np.all(spiral_arr[:-1] <= spiral_arr[1:]) and spiral_arr[-1] == 0
 
 	def add_move(self, direction: Direction) -> None:
 		self.moves *= 10
@@ -98,10 +98,10 @@ class Npuzzle:
 
 	def __str__(self):
 		string = f'{self.rows}\n'
-		if self.is_solved():
-			string += 'Solved '
-		else:
-			string += 'Unsolved '
-		string += f'in {len(str(self.moves)) - 1} steps.\n'
-		string += f'Move sequence is {str(self.extract_move_sequence())}.\n'
+		# if self.is_solved():
+		# 	string += 'Solved '
+		# else:
+		# 	string += 'Unsolved '
+		# string += f'in {len(str(self.moves)) - 1} steps.\n'
+		# string += f'Move sequence is {str(self.extract_move_sequence())}.\n'
 		return string
