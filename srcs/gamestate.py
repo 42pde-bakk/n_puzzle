@@ -1,8 +1,6 @@
-import sys
 import enum
 import numpy as np
 from typing import Tuple, List
-from srcs.parsing.parsing_file import parse_header, parserow
 
 
 class Direction(enum.IntEnum):
@@ -28,10 +26,6 @@ def get_movepos(zero_pos: Tuple[int, int], direction: Direction) -> Tuple[int, i
 	return x, y
 
 
-def is_sorted(arr: np.ndarray) -> bool:
-	return np.all(arr[:-1] <= arr[1:])
-
-
 class Npuzzle:
 	"""Class to contain information about the current state of the puzzle"""
 	def __init__(self) -> None:
@@ -39,19 +33,17 @@ class Npuzzle:
 		self.moves = 7
 		self.zero_pos = (0, 0)
 		self.rows = np.ndarray
+		self.parent = None
 
 	def give_copy(self, x):
 		self.size = x.size
 		self.moves = x.moves
 		self.zero_pos = x.zero_pos
-		self.rows = x.rows
+		self.rows = x.original_position
+		self.parent = x
 
-	def parse_puzzle(self, rows: List[str]):
-		self.size = 0
-		self.rows = self.readrows(rows)
-		print(type(self.rows), type(self.rows[0]), self.rows[0].dtype)
-		self.zero_pos = self.find_zero_pos()  # Tuple[xcoord, ycoord]
-		print(f'og is:\n{self.rows}\n\n')
+	def __eq__(self, other):
+		return np.array_equal(self.rows, other.original_position)
 
 	def __lt__(self, other):
 		return self.move_amount() < other.move_amount()
@@ -66,24 +58,6 @@ class Npuzzle:
 					return x, y
 		raise IndexError
 
-	def addrow(self, row: str) -> list:
-		if self.size == 0:
-			try:
-				self.set_size(parse_header(row))
-			except IndexError:
-				return []
-		else:
-			try:
-				parsed_row = parserow(row)
-				return parsed_row
-			except (AssertionError, ValueError) as e:
-				print(f'row {row} is invalid.', file=sys.stderr)
-				raise e
-		return []
-
-	def readrows(self, rows: List[str]) -> np.ndarray:
-		return np.array([temp for row in rows if (temp := np.array(self.addrow(row), dtype=np.uint16)).size])
-
 	def is_possible(self, direction: Direction) -> bool:
 		if direction == Direction.UP:
 			assert self.zero_pos[1] != 0
@@ -96,8 +70,8 @@ class Npuzzle:
 		return True
 
 	def is_solved(self) -> bool:
-		flattened_puzzle = self.rows.flatten()
-		return flattened_puzzle[-1] == 0 and is_sorted(flattened_puzzle[:-1])
+		spiral_arr = spiral_traversal(self.rows)
+		return np.all(spiral_arr[:-1] <= spiral_arr[1:]) and spiral_arr[-1] == 0
 
 	def add_move(self, direction: Direction) -> None:
 		self.moves *= 10
@@ -121,9 +95,6 @@ class Npuzzle:
 
 	def move_amount(self) -> int:
 		return len(str(self.moves)) - 1
-
-	def get_int_repr(self):
-		return int(''.join(map(str, self.rows.flatten())))
 
 	def __str__(self):
 		string = f'{self.rows}\n'
