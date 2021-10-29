@@ -2,6 +2,7 @@ import time
 import copy
 import heapq
 import numpy as np
+from math import sqrt
 from srcs.gamestate import Gamestate, Direction
 from srcs.statistics import Statistics
 from srcs.puzzle import Puzzle
@@ -9,21 +10,21 @@ tiebreaker = 0
 
 
 def push_to_heap(queue: [], cost: int, node: Gamestate) -> None:
+	global tiebreaker
 	heapq.heappush(queue, (cost, tiebreaker, node))
+	tiebreaker += 1
 
 
 class Astar:
 	def __init__(self, puzzle: Puzzle, original: Gamestate, heuristic_func):
+		self.solution = None
+		self.open_queue = []
+		self.closed_queue = {}
 		self.puzzle = puzzle
 		self.statistics = Statistics()
 		self.heuristic_func = heuristic_func
-		self.open_queue = []
 		push_to_heap(self.open_queue, self.estimate_cost(original), node=original)
-		# heapq.heappush(self.open_queue, (self.estimate_cost(original), tiebreaker, original))  # (state, value)
-		self.closed_queue = {}
 		print(f'original node has heuristic value of {self.estimate_cost(original)}')
-		# self.queue_node(original)
-		self.solution = None
 
 	def estimate_cost(self, node: Gamestate) -> int:
 		"""heuristic_func is h(), and move_amount is g()"""
@@ -33,10 +34,9 @@ class Astar:
 		node_as_bytes = node.rows.tobytes()
 		seen = bool(node_as_bytes in self.closed_queue)
 		estimated_cost = self.estimate_cost(node)
+
 		if not seen or estimated_cost < self.closed_queue[node_as_bytes]:
-			self.closed_queue[node_as_bytes] = estimated_cost
 			push_to_heap(self.open_queue, estimated_cost, node=node)
-			heapq.heappush(self.open_queue, (estimated_cost, tiebreaker, node))
 			self.statistics.increment_time_complexity()
 
 		# try:
@@ -60,6 +60,7 @@ class Astar:
 	def add_node_to_closed_queue(self, node: Gamestate) -> None:
 		node_as_bytes = node.rows.tobytes()
 		estimated_cost = self.estimate_cost(node)
+
 		if node_as_bytes not in self.closed_queue or self.closed_queue[node_as_bytes] > estimated_cost:
 			self.closed_queue[node_as_bytes] = estimated_cost
 
@@ -78,13 +79,14 @@ class Astar:
 				pass
 		self.statistics.track_size_complexity(len(self.open_queue) + len(self.closed_queue))
 
-	def do_iteration(self) -> bool:
+	def do_iteration(self, i: int) -> bool:
 		"""Return value is to showcase whether we are at the end of our search
 			Either because we found a solution, or because we tried everything"""
 		heuristic_value, _, q = heapq.heappop(self.open_queue)
 		try:
 			b = q.rows.tobytes()
 			if heuristic_value >= self.closed_queue[b]:
+				print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[b]}, b={b}')
 				return False
 		except KeyError:
 			pass
@@ -92,7 +94,7 @@ class Astar:
 			self.solution = q
 			print(f'Found solution!{self.solution}')
 			return True
-		print(f'EXPANDING\tHeuristic_value={heuristic_value}, h_manhattan={heuristic_value - q.move_amount()}\n{q}')
+		print(f'{i}EXPANDING\tHeuristic_value={heuristic_value}, h_manhattan={heuristic_value - q.move_amount()}\n{q}')
 
 		self.spawn_successors(q)
 		return False
@@ -102,7 +104,7 @@ class Astar:
 		generation_amount = 0
 		has_solution = False
 		while len(self.open_queue) > 0 and not has_solution and generation_amount < 212039020:
-			has_solution = self.do_iteration()
+			has_solution = self.do_iteration(generation_amount)
 			generation_amount += 1
 		open_queue_size = len(self.open_queue)
 		if not has_solution:
