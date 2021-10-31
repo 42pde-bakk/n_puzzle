@@ -1,19 +1,19 @@
 import sys
-import copy
-import numpy as np
-from srcs.gamestate import Gamestate, Direction
 from srcs.puzzle import Puzzle, to_spiralarray
 
 
 def is_even(nb: int) -> bool:
+	"""Really?"""
 	return nb % 2 == 0
 
 
 def is_odd(nb: int) -> bool:
+	"""Really?"""
 	return not is_even(nb)
 
 
 class PuzzleValidator:
+	"""Utility class to check if a puzzle is valid and solvable"""
 	def __init__(self):
 		pass
 
@@ -47,7 +47,7 @@ class PuzzleValidator:
 		print(f'inversion_count is {inversion_count}, position from bottom is {puzzle.size - zero_pos[0]}')
 		if is_odd(puzzle.size) and is_even(inversion_count):
 			return True
-		elif is_even(puzzle.size) and (is_even(puzzle.size - zero_pos[0]) ^ is_odd(inversion_count)):
+		if is_even(puzzle.size) and (is_even(puzzle.size - zero_pos[0]) ^ is_odd(inversion_count)):
 			# the ^ operator is a XOR gate
 			return True
 		return False
