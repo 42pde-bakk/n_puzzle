@@ -20,7 +20,7 @@ class Statistics:
 		print(gamestate)
 
 	def show_statistics(self, gamestate: Gamestate) -> None:
-		Statistics.print_path(gamestate)
+		# Statistics.print_path(gamestate)
 		print(f'Time complexity: {self.__time_complexity}')
 		print(f'Size complexity: {self.__size_complexity}')
-		print(f'Total moves: {gamestate.move_amount()}')
+		print(f'Total moves: {gamestate.moves}')

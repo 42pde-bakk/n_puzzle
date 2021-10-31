@@ -2,16 +2,16 @@ import time
 import copy
 import heapq
 import numpy as np
-from math import sqrt
+from srcs.heuristics import set_heuristic_values
 from srcs.gamestate import Gamestate, Direction
 from srcs.statistics import Statistics
 from srcs.puzzle import Puzzle
 tiebreaker = 0
 
 
-def push_to_heap(queue: [], cost: int, node: Gamestate) -> None:
+def push_to_heap(queue: [], node: Gamestate) -> None:
 	global tiebreaker
-	heapq.heappush(queue, (cost, tiebreaker, node))
+	heapq.heappush(queue, (node.moves + node.total, node.total, tiebreaker, node))
 	tiebreaker += 1
 
 
@@ -22,21 +22,16 @@ class Astar:
 		self.closed_queue = {}
 		self.puzzle = puzzle
 		self.statistics = Statistics()
-		self.heuristic_func = heuristic_func
-		push_to_heap(self.open_queue, self.estimate_cost(original), node=original)
-		print(f'original node has heuristic value of {self.estimate_cost(original)}')
-
-	def estimate_cost(self, node: Gamestate) -> int:
-		"""heuristic_func is h(), and move_amount is g()"""
-		return self.heuristic_func(node.rows, self.puzzle.goal_matrix) + node.move_amount()
+		set_heuristic_values(original, puzzle.goal_matrix)
+		push_to_heap(self.open_queue, node=original)
+		print(f'original node has heuristic value of {original.mannhattan}')
 
 	def queue_node(self, node: Gamestate) -> None:
 		node_as_bytes = node.rows.tobytes()
 		seen = bool(node_as_bytes in self.closed_queue)
-		estimated_cost = self.estimate_cost(node)
 
-		if not seen or estimated_cost < self.closed_queue[node_as_bytes]:
-			push_to_heap(self.open_queue, estimated_cost, node=node)
+		if not seen or node.moves < self.closed_queue[node_as_bytes]:
+			push_to_heap(self.open_queue, node=node)
 			self.statistics.increment_time_complexity()
 
 		# try:
@@ -59,10 +54,9 @@ class Astar:
 
 	def add_node_to_closed_queue(self, node: Gamestate) -> None:
 		node_as_bytes = node.rows.tobytes()
-		estimated_cost = self.estimate_cost(node)
 
-		if node_as_bytes not in self.closed_queue or self.closed_queue[node_as_bytes] > estimated_cost:
-			self.closed_queue[node_as_bytes] = estimated_cost
+		if node_as_bytes not in self.closed_queue or self.closed_queue[node_as_bytes] > node.moves:
+			self.closed_queue[node_as_bytes] = node.moves
 
 	def spawn_successors(self, state: Gamestate):
 		self.add_node_to_closed_queue(state)
@@ -74,6 +68,7 @@ class Astar:
 				# successor = Npuzzle()
 				# successor.give_copy(state)
 				successor.do_move(direction)
+				set_heuristic_values(successor, self.puzzle.goal_matrix)
 				self.queue_node(node=successor)
 			except (AssertionError, KeyError):
 				pass
@@ -82,7 +77,7 @@ class Astar:
 	def do_iteration(self, i: int) -> bool:
 		"""Return value is to showcase whether we are at the end of our search
 			Either because we found a solution, or because we tried everything"""
-		heuristic_value, _, q = heapq.heappop(self.open_queue)
+		heuristic_value, _, _, q = heapq.heappop(self.open_queue)
 		try:
 			b = q.rows.tobytes()
 			if heuristic_value >= self.closed_queue[b]:
@@ -94,7 +89,8 @@ class Astar:
 			self.solution = q
 			print(f'Found solution!{self.solution}')
 			return True
-		print(f'{i}EXPANDING\tHeuristic_value={heuristic_value}, h_manhattan={heuristic_value - q.move_amount()}\n{q}')
+		# print(f'{i}-EXPANDING\tHeuristic_value={heuristic_value}, h_manhattan={heuristic_value - q.moves}\n{q}')
+		# print(q.get_heuristics())
 
 		self.spawn_successors(q)
 		return False
@@ -103,17 +99,7 @@ class Astar:
 		start_time = time.time()
 		generation_amount = 0
 		has_solution = False
-		while len(self.open_queue) > 0 and not has_solution and generation_amount < 212039020:
+		while len(self.open_queue) > 0 and not has_solution:
 			has_solution = self.do_iteration(generation_amount)
 			generation_amount += 1
-		open_queue_size = len(self.open_queue)
-		if not has_solution:
-			print(f'\nQUEUE STILL HAS SIZE {len(self.open_queue)}')
-			try:
-				while True:
-					heuristic, _, state = heapq.heappop(self.open_queue)
-					print(f'heuristic={heuristic}, state=\n{state}')
-			except IndexError:
-				pass
-		print(f'open_queue had size {open_queue_size} and closed_queue has size {len(self.closed_queue)}')
 		print(f'Ran {generation_amount} loops in {time.time() - start_time}s.')

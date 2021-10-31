@@ -69,12 +69,11 @@ class Puzzle:
 	def set_goals(self):
 		self.goal_matrix = to_spiralarray(np.array([x for x in range(1, self.size ** 2)] + [0], dtype=np.uint16).reshape((self.size, self.size)))
 		print(f'goal_matrix is {self.goal_matrix}')
-		# exit(1)
 
 	def create_starting_state(self) -> Gamestate:
 		gamestate = Gamestate()
 		gamestate.rows = copy.deepcopy(self.original_position)
-		gamestate.size = self.size
+		Gamestate.size = self.size
 		gamestate.zero_pos = gamestate.find_zero_pos()
 		print(f'gamestate.parent={gamestate.parent}')
 		return gamestate

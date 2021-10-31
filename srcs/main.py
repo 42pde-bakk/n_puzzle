@@ -16,9 +16,7 @@ def main(npuzzle_file):
 		astar = Astar(puzzle, puzzle.create_starting_state(), mannhattan_distance)
 		astar.solve()
 		if astar.solution is not None:
-			print(f'lets run it again to check!')
-			# PuzzleValidator.check_solution(puzzle, astar.solution.extract_move_sequence_as_enums())
-			# astar.statistics.show_statistics(astar.solution)
+			astar.statistics.show_statistics(astar.solution)
 		else:
 			print(f'I failed at solving the puzzle')
 	else:

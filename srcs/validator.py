@@ -51,14 +51,3 @@ class PuzzleValidator:
 			# the ^ operator is a XOR gate
 			return True
 		return False
-
-	@staticmethod
-	def check_solution(original_puzzle: Puzzle, move_sequence: list[Direction]):
-		gamestate = Gamestate()
-		gamestate.rows = copy.deepcopy(original_puzzle.original_position)
-		gamestate.size = original_puzzle.size
-		gamestate.zero_pos = gamestate.find_zero_pos()
-
-		for move in move_sequence:
-			gamestate.do_move(Direction(move))
-		print(f'is valid solution: {np.array_equal(original_puzzle.goal_matrix, gamestate.rows)}')
