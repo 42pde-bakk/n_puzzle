@@ -1,5 +1,4 @@
-import numpy as np
-from typing import List, Tuple
+from typing import List
 
 
 def clean_row(row: str) -> List[str]:
