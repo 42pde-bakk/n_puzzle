@@ -3,8 +3,9 @@ from srcs.gamestate import Gamestate
 
 
 def misplaced_tiles(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:
+	"""Iterate through the matrix and sum the amount of tiles not in their goal position"""
 	val = 0
-	for (idx, cur), (idx2, goal) in zip(np.ndenumerate(current_matrix), np.ndenumerate(goal_matrix)):
+	for (_, cur), (_, goal) in zip(np.ndenumerate(current_matrix), np.ndenumerate(goal_matrix)):
 		if cur == goal:
 			val += 1
 	return val
@@ -12,6 +13,7 @@ def misplaced_tiles(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:
 
 # Not a typo, Mannhattan is a real place in TF2
 def mannhattan_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:
+	"""Iterate through the matrix and sum the manhattan distances"""
 	val = 0
 	for y, _ in enumerate(current_matrix):
 		for x, _ in enumerate(current_matrix[y]):
@@ -23,6 +25,8 @@ def mannhattan_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> 
 
 
 def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray) -> None:
+	"""Set various heuristic values in the provided Gamestate class"""
+	# TODO Add arguments parsing
 	state.mannhattan = mannhattan_distance(state.rows, goal_matrix)
 	state.misplaced = mannhattan_distance(state.rows, goal_matrix)
 	state.linear = 0
