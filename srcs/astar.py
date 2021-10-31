@@ -10,13 +10,15 @@ tiebreaker = 0
 
 
 def push_to_heap(queue: [], node: Gamestate) -> None:
+	"""Wrapper function to push to the heapq and increment the tiebreaker value"""
 	global tiebreaker
 	heapq.heappush(queue, (node.moves + node.total, node.total, tiebreaker, node))
 	tiebreaker += 1
 
 
 class Astar:
-	def __init__(self, puzzle: Puzzle, original: Gamestate, heuristic_func):
+	"""Astar algorithm class"""
+	def __init__(self, puzzle: Puzzle, original: Gamestate):
 		self.solution = None
 		self.open_queue = []
 		self.closed_queue = {}
@@ -27,6 +29,7 @@ class Astar:
 		print(f'original node has heuristic value of {original.mannhattan}')
 
 	def queue_node(self, node: Gamestate) -> None:
+		"""Method to push value to queue if there wasn't already a better gamestate like this in the queue"""
 		node_as_bytes = node.rows.tobytes()
 		seen = bool(node_as_bytes in self.closed_queue)
 
@@ -53,12 +56,14 @@ class Astar:
 		# print(f'after heappushing, heapq has size {len(self.open_queue)}')
 
 	def add_node_to_closed_queue(self, node: Gamestate) -> None:
+		"""Add gamestate node to the closed queue, and update it's value if it already existed"""
 		node_as_bytes = node.rows.tobytes()
 
 		if node_as_bytes not in self.closed_queue or self.closed_queue[node_as_bytes] > node.moves:
 			self.closed_queue[node_as_bytes] = node.moves
 
 	def spawn_successors(self, state: Gamestate):
+		"""Spawn children of the most promising gamestate"""
 		self.add_node_to_closed_queue(state)
 		for direction in Direction:
 			try:
@@ -77,25 +82,26 @@ class Astar:
 	def do_iteration(self, i: int) -> bool:
 		"""Return value is to showcase whether we are at the end of our search
 			Either because we found a solution, or because we tried everything"""
-		heuristic_value, _, _, q = heapq.heappop(self.open_queue)
+		heuristic_value, _, _, node = heapq.heappop(self.open_queue)
 		try:
-			b = q.rows.tobytes()
-			if heuristic_value >= self.closed_queue[b]:
-				print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[b]}, b={b}')
+			as_bytes = node.rows.tobytes()
+			if heuristic_value >= self.closed_queue[as_bytes]:
+				print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[as_bytes]}, b={as_bytes}')
 				return False
 		except KeyError:
 			pass
-		if np.array_equal(q.rows, self.puzzle.goal_matrix):
-			self.solution = q
+		if np.array_equal(node.rows, self.puzzle.goal_matrix):
+			self.solution = node
 			print(f'Found solution!{self.solution}')
 			return True
 		# print(f'{i}-EXPANDING\tHeuristic_value={heuristic_value}, h_manhattan={heuristic_value - q.moves}\n{q}')
 		# print(q.get_heuristics())
 
-		self.spawn_successors(q)
+		self.spawn_successors(node)
 		return False
 
 	def solve(self):
+		"""Keep deepening the Astar search until the queue empty or a solution has been found"""
 		start_time = time.time()
 		generation_amount = 0
 		has_solution = False
