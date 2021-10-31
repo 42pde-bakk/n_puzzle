@@ -1,4 +1,6 @@
 import sys
+from typing import Tuple
+import numpy as np
 from srcs.puzzle import Puzzle, to_spiralarray
 
 
@@ -12,8 +14,27 @@ def is_odd(nb: int) -> bool:
 	return not is_even(nb)
 
 
+def count_inversions(puzzle: Puzzle) -> int:
+	inversions = 0
+	for a in range(puzzle.size ** 2 - 1):
+		for b in range(a + 1, puzzle.size ** 2):
+			# Get the values of the a-th and b-th values in the original array
+			a_val = puzzle.original_position[a // puzzle.size][a % puzzle.size]
+			b_val = puzzle.original_position[b // puzzle.size][b % puzzle.size]
+			if np.where(puzzle.goal_matrix == a_val) > np.where(puzzle.goal_matrix == b_val):
+				inversions += 1
+	print(f'{inversions} inversions')
+	return inversions
+
+
+def find_pos_in_array(state: np.ndarray, value: int = 0) -> Tuple[int, int]:
+	arr = np.where(state == value)
+	return arr[0][0], arr[1][0]
+
+
 class PuzzleValidator:
 	"""Utility class to check if a puzzle is valid and solvable"""
+
 	def __init__(self):
 		pass
 
@@ -35,19 +56,10 @@ class PuzzleValidator:
 	@staticmethod
 	def is_solvable(puzzle: Puzzle) -> bool:
 		"""Checks whether the puzzle actually is solvable"""
-		inversion_count = 0
-		spiral_arr = to_spiralarray(puzzle.original_position).flatten()
-		tiles_nb = puzzle.size * puzzle.size
-		for i in range(0, tiles_nb - 1):
-			for j in range(i + 1, tiles_nb):
-				if spiral_arr[i] > spiral_arr[j]:
-					# print(f'inversion, cus spiral_arr[{i}]={spiral_arr[i]} > spiral_arr[{j}]={spiral_arr[j]}')
-					inversion_count += 1
-		zero_pos = puzzle.find_zero_pos()
-		print(f'inversion_count is {inversion_count}, position from bottom is {puzzle.size - zero_pos[0]}')
-		if is_odd(puzzle.size) and is_even(inversion_count):
-			return True
-		if is_even(puzzle.size) and (is_even(puzzle.size - zero_pos[0]) ^ is_odd(inversion_count)):
-			# the ^ operator is a XOR gate
-			return True
-		return False
+
+		inversion_count = count_inversions(puzzle)
+		og_zeropos = find_pos_in_array(puzzle.original_position)
+		goal_zeropos = find_pos_in_array(puzzle.goal_matrix)
+		emptytile_distance = abs(og_zeropos[0] - goal_zeropos[0]) + abs(og_zeropos[1] - goal_zeropos[1])
+		print(f'inversion_count is {inversion_count}, position from bottom is {emptytile_distance}')
+		return emptytile_distance % 2 == inversion_count % 2
