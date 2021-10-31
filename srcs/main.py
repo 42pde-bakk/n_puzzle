@@ -5,7 +5,7 @@ from srcs.astar import Astar
 from srcs.validator import PuzzleValidator
 
 
-def main(npuzzle_file):
+def main(npuzzle_file) -> int:
 	"""Open the given argument, parse it, validate it and start the search"""
 	with open(npuzzle_file, 'r') as f:
 		puzzle = Puzzle()
@@ -16,14 +16,17 @@ def main(npuzzle_file):
 		astar.solve()
 		if astar.solution is not None:
 			astar.statistics.show_statistics(astar.solution)
+			return 0
 		else:
-			print('I failed at solving the puzzle')
+			print('I failed at solving the puzzle', file=sys.stderr)
 	else:
-		print('Puzzle is not solvable')
+		print('Puzzle is not solvable', file=sys.stderr)
+	return 1
 
 
 if __name__ == "__main__":
 	if not sys.argv[1]:
-		print("Please supply a file containing the n_puzzle")
+		print('Please supply a file containing the n_puzzle', file=sys.stderr)
 	else:
-		main(npuzzle_file=sys.argv[1])
+		exit_code = main(npuzzle_file=sys.argv[1])
+		sys.exit(exit_code)
