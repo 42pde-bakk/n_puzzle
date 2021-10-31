@@ -8,6 +8,7 @@ from srcs.gamestate import Gamestate
 
 # Create a spiral matrix from a given list
 def to_spiralarray(arr: np.ndarray) -> np.ndarray:
+	"""Return a np matrix containing the matrix, but in spiral form starting topleft moving clockwise"""
 	m, n = arr.shape
 	arr = arr.flatten()
 
@@ -60,6 +61,7 @@ def to_spiralarray(arr: np.ndarray) -> np.ndarray:
 
 
 class Puzzle:
+	"""Class to contain a puzzle's size, starting position and the goal positions"""
 	def __init__(self):
 		self.size = 0
 		self.goal_matrix = np.ndarray
@@ -67,10 +69,15 @@ class Puzzle:
 
 	# noinspection PyTypeChecker
 	def set_goals(self):
-		self.goal_matrix = to_spiralarray(np.array([x for x in range(1, self.size ** 2)] + [0], dtype=np.uint16).reshape((self.size, self.size)))
+		"""Create the goal matrix"""
+		self.goal_matrix = \
+			to_spiralarray(
+				np.array(list(range(1, self.size ** 2)) + [0], dtype=np.uint16).reshape((self.size, self.size))
+			)
 		print(f'goal_matrix is {self.goal_matrix}')
 
 	def create_starting_state(self) -> Gamestate:
+		"""Copy original position to a Gamestate class instance"""
 		gamestate = Gamestate()
 		gamestate.rows = copy.deepcopy(self.original_position)
 		Gamestate.size = self.size
@@ -79,6 +86,7 @@ class Puzzle:
 		return gamestate
 
 	def addrow(self, row: str) -> list:
+		"""Set puzzle size if not set already or return the parsed row"""
 		if self.size == 0:
 			try:
 				self.size = parse_header(row)
@@ -94,18 +102,20 @@ class Puzzle:
 		return []
 
 	def readrows(self, rows: List[str]) -> np.ndarray:
+		"""Create np array containing all the rows"""
 		return np.array([temp for row in rows if (temp := np.array(self.addrow(row), dtype=np.uint16)).size])
 
 	def parse_puzzle(self, rows: List[str]):
+		"""Parse puzzle, don't validate yet"""
 		self.size = 0
 		self.original_position = self.readrows(rows)
 		print(type(self.original_position), type(self.original_position[0]), self.original_position[0].dtype)
-		# self.zero_pos = self.find_zero_pos()  # Tuple[xcoord, ycoord]
 		print(f'og is:\n{self.original_position}\n\n')
 		self.set_goals()
 
 	# noinspection PyTypeChecker
 	def find_zero_pos(self) -> Tuple[int, int]:
+		"""Return position of the empty tile inside the 2D matrix as x,y coordinates"""
 		for y, row in enumerate(self.original_position):
 			for x, item in enumerate(row):
 				if item == 0:
