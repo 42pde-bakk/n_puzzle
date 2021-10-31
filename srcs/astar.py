@@ -86,7 +86,7 @@ class Astar:
 		try:
 			as_bytes = node.rows.tobytes()
 			if heuristic_value >= self.closed_queue[as_bytes]:
-				print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[as_bytes]}, b={as_bytes}')
+				# print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[as_bytes]}, b={as_bytes}')
 				return False
 		except KeyError:
 			pass
