@@ -112,12 +112,3 @@ class Puzzle:
 		print(type(self.original_position), type(self.original_position[0]), self.original_position[0].dtype)
 		print(f'og is:\n{self.original_position}\n\n')
 		self.set_goals()
-
-	# noinspection PyTypeChecker
-	def find_zero_pos(self) -> Tuple[int, int]:
-		"""Return position of the empty tile inside the 2D matrix as x,y coordinates"""
-		for y, row in enumerate(self.original_position):
-			for x, item in enumerate(row):
-				if item == 0:
-					return x, y
-		raise IndexError
