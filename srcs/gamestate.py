@@ -39,6 +39,15 @@ class Gamestate:
 		self.mannhattan = self.misplaced = self.linear = self.total = 0
 		self.moves = 0
 
+	def __deepcopy__(self, memodict={}):
+		copy_object = Gamestate()
+
+		copy_object.zero_pos = self.zero_pos
+		copy_object.rows = self.rows.copy()
+		copy_object.moves = self.moves
+		copy_object.parent = self
+		return copy_object
+
 	def give_copy(self, x):
 		"""Method to copy over values because deepcopying can be slow"""
 		self.moves = x.moves

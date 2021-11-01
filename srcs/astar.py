@@ -69,9 +69,6 @@ class Astar:
 			try:
 				state.is_possible(direction)
 				successor = copy.deepcopy(state)
-				successor.parent = state
-				# successor = Npuzzle()
-				# successor.give_copy(state)
 				successor.do_move(direction)
 				set_heuristic_values(successor, self.puzzle.goal_matrix)
 				self.queue_node(node=successor)
@@ -86,7 +83,7 @@ class Astar:
 		try:
 			as_bytes = node.rows.tobytes()
 			if heuristic_value >= self.closed_queue[as_bytes]:
-				print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[as_bytes]}, b={as_bytes}')
+				# print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[as_bytes]}, b={as_bytes}')
 				return False
 		except KeyError:
 			pass
