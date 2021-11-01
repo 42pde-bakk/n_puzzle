@@ -1,17 +1,7 @@
 import sys
-from typing import Tuple
 import numpy as np
-from srcs.puzzle import Puzzle, to_spiralarray
-
-
-def is_even(nb: int) -> bool:
-	"""Really?"""
-	return nb % 2 == 0
-
-
-def is_odd(nb: int) -> bool:
-	"""Really?"""
-	return not is_even(nb)
+from srcs.puzzle import Puzzle
+from srcs.utils.util_functions import find_pos_in_array
 
 
 def count_inversions(puzzle: Puzzle) -> int:
@@ -25,11 +15,6 @@ def count_inversions(puzzle: Puzzle) -> int:
 				inversions += 1
 	print(f'{inversions} inversions')
 	return inversions
-
-
-def find_pos_in_array(state: np.ndarray, value: int = 0) -> Tuple[int, int]:
-	arr = np.where(state == value)
-	return arr[0][0], arr[1][0]
 
 
 class PuzzleValidator:
