@@ -59,14 +59,6 @@ class Gamestate:
 	def __lt__(self, other):
 		return self.moves < other.moves
 
-	def find_zero_pos(self) -> Tuple[int, int]:
-		"""Returns the position of the empty tile inside the matrix"""
-		for y, row in enumerate(self.rows):
-			for x, item in enumerate(row):
-				if item == 0:
-					return x, y
-		raise IndexError
-
 	def is_possible(self, direction: Direction) -> bool:
 		"""Returns whether the move in this direction is possible"""
 		if direction == Direction.UP:

@@ -3,6 +3,7 @@ import copy
 from typing import List, Tuple
 import numpy as np
 from srcs.parsing.parsing_file import parse_header, parserow
+from srcs.utils.util_functions import find_pos_in_array
 from srcs.gamestate import Gamestate
 
 
@@ -81,7 +82,8 @@ class Puzzle:
 		gamestate = Gamestate()
 		gamestate.rows = copy.deepcopy(self.original_position)
 		Gamestate.size = self.size
-		gamestate.zero_pos = gamestate.find_zero_pos()
+		# noinspection PyTypeChecker
+		gamestate.zero_pos = find_pos_in_array(gamestate.rows)[::-1]  # Inverting so it's (x, y) instead of (y, x)
 		print(f'gamestate.parent={gamestate.parent}')
 		return gamestate
 
@@ -112,12 +114,3 @@ class Puzzle:
 		print(type(self.original_position), type(self.original_position[0]), self.original_position[0].dtype)
 		print(f'og is:\n{self.original_position}\n\n')
 		self.set_goals()
-
-	# noinspection PyTypeChecker
-	def find_zero_pos(self) -> Tuple[int, int]:
-		"""Return position of the empty tile inside the 2D matrix as x,y coordinates"""
-		for y, row in enumerate(self.original_position):
-			for x, item in enumerate(row):
-				if item == 0:
-					return x, y
-		raise IndexError
