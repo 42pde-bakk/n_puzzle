@@ -61,11 +61,10 @@ class Gamestate:
 
 	def find_zero_pos(self) -> Tuple[int, int]:
 		"""Returns the position of the empty tile inside the matrix"""
-		for y, row in enumerate(self.rows):
-			for x, item in enumerate(row):
-				if item == 0:
-					return x, y
-		raise IndexError
+		position_arr = np.where(self.rows == 0)
+		if position_arr[0].size == 0:
+			raise IndexError
+		return position_arr[1][0], position_arr[0][0]  # x, y
 
 	def is_possible(self, direction: Direction) -> bool:
 		"""Returns whether the move in this direction is possible"""
