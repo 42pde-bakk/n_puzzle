@@ -1,8 +1,6 @@
-import sys
 import copy
-from typing import List, Tuple
+from typing import List
 import numpy as np
-from srcs.parsing.parsing_file import parse_header, parserow
 from srcs.utils.util_functions import find_pos_in_array
 from srcs.gamestate import Gamestate
 
@@ -87,30 +85,17 @@ class Puzzle:
 		print(f'gamestate.parent={gamestate.parent}')
 		return gamestate
 
-	def addrow(self, row: str) -> list:
-		"""Set puzzle size if not set already or return the parsed row"""
-		if self.size == 0:
-			try:
-				self.size = parse_header(row)
-			except IndexError:
-				return []
-		else:
-			try:
-				parsed_row = parserow(row)
-				return parsed_row
-			except (AssertionError, ValueError) as e:
-				print(f'row {row} is invalid.', file=sys.stderr)
-				raise e
-		return []
-
 	def readrows(self, rows: List[str]) -> np.ndarray:
 		"""Create np array containing all the rows"""
-		return np.array([temp for row in rows if (temp := np.array(self.addrow(row), dtype=np.uint16)).size])
+		ints = []
+		for row in rows:
+			ints += [int(token) for token in row.split('#')[0].split()]
+		self.size = ints.pop(0)
+		return np.array(ints, dtype=np.uint16).reshape((self.size, self.size))
 
 	def parse_puzzle(self, rows: List[str]):
 		"""Parse puzzle, don't validate yet"""
 		self.size = 0
 		self.original_position = self.readrows(rows)
-		print(type(self.original_position), type(self.original_position[0]), self.original_position[0].dtype)
 		print(f'og is:\n{self.original_position}\n\n')
 		self.set_goals()
