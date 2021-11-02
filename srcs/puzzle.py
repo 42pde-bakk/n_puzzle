@@ -105,12 +105,15 @@ class Puzzle:
 
 	def readrows(self, rows: List[str]) -> np.ndarray:
 		"""Create np array containing all the rows"""
-		return np.array([temp for row in rows if (temp := np.array(self.addrow(row), dtype=np.uint16)).size])
+		ints = []
+		for row in rows:
+			ints += [int(token) for token in row.split('#')[0].split()]
+		self.size = ints.pop(0)
+		return np.array(ints, dtype=np.uint16).reshape((3, 3))
 
 	def parse_puzzle(self, rows: List[str]):
 		"""Parse puzzle, don't validate yet"""
 		self.size = 0
 		self.original_position = self.readrows(rows)
-		print(type(self.original_position), type(self.original_position[0]), self.original_position[0].dtype)
 		print(f'og is:\n{self.original_position}\n\n')
 		self.set_goals()
