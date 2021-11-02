@@ -1,8 +1,6 @@
-import sys
 import copy
-from typing import List, Tuple
+from typing import List
 import numpy as np
-from srcs.parsing.parsing_file import parse_header, parserow
 from srcs.utils.util_functions import find_pos_in_array
 from srcs.gamestate import Gamestate
 
@@ -86,22 +84,6 @@ class Puzzle:
 		gamestate.zero_pos = find_pos_in_array(gamestate.rows)[::-1]  # Inverting so it's (x, y) instead of (y, x)
 		print(f'gamestate.parent={gamestate.parent}')
 		return gamestate
-
-	def addrow(self, row: str) -> list:
-		"""Set puzzle size if not set already or return the parsed row"""
-		if self.size == 0:
-			try:
-				self.size = parse_header(row)
-			except IndexError:
-				return []
-		else:
-			try:
-				parsed_row = parserow(row)
-				return parsed_row
-			except (AssertionError, ValueError) as e:
-				print(f'row {row} is invalid.', file=sys.stderr)
-				raise e
-		return []
 
 	def readrows(self, rows: List[str]) -> np.ndarray:
 		"""Create np array containing all the rows"""
