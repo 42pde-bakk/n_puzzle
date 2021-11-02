@@ -91,7 +91,7 @@ class Puzzle:
 		for row in rows:
 			ints += [int(token) for token in row.split('#')[0].split()]
 		self.size = ints.pop(0)
-		return np.array(ints, dtype=np.uint16).reshape((3, 3))
+		return np.array(ints, dtype=np.uint16).reshape((self.size, self.size))
 
 	def parse_puzzle(self, rows: List[str]):
 		"""Parse puzzle, don't validate yet"""
