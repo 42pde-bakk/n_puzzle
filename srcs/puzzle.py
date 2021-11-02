@@ -82,7 +82,6 @@ class Puzzle:
 		Gamestate.size = self.size
 		# noinspection PyTypeChecker
 		gamestate.zero_pos = find_pos_in_array(gamestate.rows)[::-1]  # Inverting so it's (x, y) instead of (y, x)
-		print(f'gamestate.parent={gamestate.parent}')
 		return gamestate
 
 	def readrows(self, rows: List[str]) -> np.ndarray:

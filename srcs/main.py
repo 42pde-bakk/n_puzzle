@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import cProfile
 from argparse import ArgumentParser
 from srcs.puzzle import Puzzle
 from srcs.astar import Astar
@@ -48,9 +49,13 @@ def main(npuzzle_file) -> int:
 	return 1
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+def fakemain():
 	args = parse_arguments()
 	heur = Heuristics(args)
 	print(heur)
 	exit_code = main(npuzzle_file=sys.argv[1])
 	sys.exit(exit_code)
+
+
+cProfile.run('fakemain()')
