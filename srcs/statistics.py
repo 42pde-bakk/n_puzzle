@@ -25,7 +25,7 @@ class Statistics:
 
 	def show_statistics(self, gamestate: Gamestate) -> None:
 		"""Prints statistics of the search conform to subject requirements"""
-		Statistics.print_path(gamestate)
+		# Statistics.print_path(gamestate)
 		print(f'Time complexity: {self.__time_complexity}')
 		print(f'Size complexity: {self.__size_complexity}')
 		print(f'Total moves: {gamestate.moves}')

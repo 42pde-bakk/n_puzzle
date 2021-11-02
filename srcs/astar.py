@@ -2,18 +2,15 @@ import time
 import copy
 import heapq
 import numpy as np
-from srcs.heuristics import set_heuristic_values
+from srcs.heuristics import Heuristics
 from srcs.gamestate import Gamestate, Direction
 from srcs.statistics import Statistics
 from srcs.puzzle import Puzzle
-tiebreaker = 0
 
 
 def push_to_heap(queue: [], node: Gamestate) -> None:
 	"""Wrapper function to push to the heapq and increment the tiebreaker value"""
-	global tiebreaker
-	heapq.heappush(queue, (node.moves + node.total, node.total, tiebreaker, node))
-	tiebreaker += 1
+	heapq.heappush(queue, Heuristics.get_heuristic_tuple(node))
 
 
 class Astar:
@@ -24,7 +21,7 @@ class Astar:
 		self.closed_queue = {}
 		self.puzzle = puzzle
 		self.statistics = Statistics()
-		set_heuristic_values(original, puzzle.goal_matrix)
+		Heuristics.set_heuristic_values(original, puzzle.goal_matrix)
 		push_to_heap(self.open_queue, node=original)
 		print(f'original node has heuristic value of {original.mannhattan}')
 
@@ -70,7 +67,7 @@ class Astar:
 				state.is_possible(direction)
 				successor = copy.deepcopy(state)
 				successor.do_move(direction)
-				set_heuristic_values(successor, self.puzzle.goal_matrix)
+				Heuristics.set_heuristic_values(successor, self.puzzle.goal_matrix)
 				self.queue_node(node=successor)
 			except (AssertionError, KeyError):
 				pass

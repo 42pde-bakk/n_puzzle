@@ -24,10 +24,47 @@ def mannhattan_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> 
 	return val
 
 
-def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray) -> None:
-	"""Set various heuristic values in the provided Gamestate class"""
-	# TODO Add arguments parsing
-	state.mannhattan = mannhattan_distance(state.rows, goal_matrix)
-	state.misplaced = mannhattan_distance(state.rows, goal_matrix)
-	state.linear = 0
-	state.total = state.mannhattan + state.misplaced
+class Heuristics:
+	manhattan = False
+	minkowski = False
+	misplaced = False
+	greedy = False
+	uniform = False
+	tiebreaker = 0
+
+	def __init__(self, args):
+		for arg in vars(args):
+			if arg in ['manhattan', 'minkowski', 'misplaced']:
+				setattr(Heuristics, arg, getattr(args, arg))
+		print(args)
+
+	@staticmethod
+	def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray) -> None:
+		"""Sets the heuristic values according to the arguments given to Argparse"""
+		total_value = 0
+		if Heuristics.manhattan:
+			state.mannhattan = mannhattan_distance(state.rows, goal_matrix)
+			total_value += state.mannhattan
+		if Heuristics.misplaced:
+			state.misplaced += misplaced_tiles(state.rows, goal_matrix)
+			total_value += state.misplaced
+		state.total = total_value
+
+	@staticmethod
+	def get_heuristic_tuple(state: Gamestate) -> tuple:
+		"""Returns a tuple for heapq, while keeping track of the greedy/uniform arguments"""
+		__tuple = ()
+		Heuristics.tiebreaker += 1
+		if Heuristics.greedy:
+			return state.total, Heuristics.tiebreaker, state
+		if Heuristics.uniform:
+			return state.moves, Heuristics.tiebreaker, state
+		return state.total + state.moves, state.total, Heuristics.tiebreaker, state
+
+	def __str__(self) -> str:
+		"""Returns a string containing all the static variables and their values"""
+		__str = 'Heuristics:\n'
+		for arg in ['manhattan', 'minkowski', 'misplaced', 'greedy', 'uniform']:
+			__str += f'{arg}: {getattr(Heuristics, arg)}\n'
+		return __str
+
