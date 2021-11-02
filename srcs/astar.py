@@ -76,7 +76,8 @@ class Astar:
 	def do_iteration(self, i: int) -> bool:
 		"""Return value is to showcase whether we are at the end of our search
 			Either because we found a solution, or because we tried everything"""
-		heuristic_value, _, _, node = heapq.heappop(self.open_queue)
+		popped = heapq.heappop(self.open_queue)
+		heuristic_value, node = popped[0], popped[-1]
 		try:
 			as_bytes = node.rows.tobytes()
 			if heuristic_value >= self.closed_queue[as_bytes]:

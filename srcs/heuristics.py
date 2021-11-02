@@ -34,7 +34,7 @@ class Heuristics:
 
 	def __init__(self, args):
 		for arg in vars(args):
-			if arg in ['manhattan', 'minkowski', 'misplaced']:
+			if arg in ['manhattan', 'minkowski', 'misplaced', 'greedy', 'uniform']:
 				setattr(Heuristics, arg, getattr(args, arg))
 		print(args)
 
