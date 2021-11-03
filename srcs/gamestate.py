@@ -55,13 +55,6 @@ class Gamestate:
 		self.rows = x.rows
 		self.parent = x
 
-	def get_heuristics(self) -> str:
-		"""Return string with this gamestate's moves and heuristic values"""
-		return f'moves: {self.moves}\n' \
-			f'mannhattan distance: {self.mannhattan}\n' \
-			f'misplaced tiles: {self.misplaced}\n' \
-			f'total H: {self.h_total}'
-
 	def __eq__(self, other):
 		return np.array_equal(self.rows, other.rows)
 

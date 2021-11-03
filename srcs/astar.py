@@ -33,7 +33,7 @@ class Astar:
 		node_as_bytes = node.rows.tobytes()
 		if not self.args.greedy:
 			node.g = node.moves
-		set_heuristic_values(node, self.puzzle.goal_matrix)
+		set_heuristic_values(node, self.puzzle.goal_matrix, self.args)
 		seen = bool(node_as_bytes in self.closed_queue)
 
 		if not seen or node.moves < self.closed_queue[node_as_bytes]:
