@@ -6,7 +6,7 @@ def misplaced_tiles(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:
 	"""Iterate through the matrix and sum the amount of tiles not in their goal position"""
 	val = 0
 	for (_, cur), (_, goal) in zip(np.ndenumerate(current_matrix), np.ndenumerate(goal_matrix)):
-		if cur == goal:
+		if cur != goal:
 			val += 1
 	return val
 
@@ -24,10 +24,13 @@ def mannhattan_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> 
 	return val
 
 
-def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray) -> None:
+def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray, args) -> None:
 	"""Set various heuristic values in the provided Gamestate class"""
 	# TODO Add arguments parsing
-	state.mannhattan = mannhattan_distance(state.rows, goal_matrix)
-	state.misplaced = mannhattan_distance(state.rows, goal_matrix)
-	state.linear = 0
-	state.total = state.mannhattan + state.misplaced
+	if not args.uniform:
+		total_h = 0
+		if args.manhattan:
+			total_h += mannhattan_distance(state.rows, goal_matrix)
+		if args.misplaced:
+			total_h += misplaced_tiles(state.rows, goal_matrix)
+		state.h_total = total_h

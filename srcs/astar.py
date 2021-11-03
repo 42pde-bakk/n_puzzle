@@ -12,48 +12,33 @@ tiebreaker = 0
 def push_to_heap(queue: [], node: Gamestate) -> None:
 	"""Wrapper function to push to the heapq and increment the tiebreaker value"""
 	global tiebreaker
-	heapq.heappush(queue, (node.moves + node.total, node.total, tiebreaker, node))
+	heapq.heappush(queue, (node.g + node.h_total, node.h_total, tiebreaker, node))
 	tiebreaker += 1
 
 
 class Astar:
 	"""Astar algorithm class"""
-	def __init__(self, puzzle: Puzzle, original: Gamestate):
+	def __init__(self, puzzle: Puzzle, original: Gamestate, args):
 		self.solution = None
+		self.args = args
 		self.open_queue = []
 		self.closed_queue = {}
 		self.puzzle = puzzle
 		self.statistics = Statistics()
-		set_heuristic_values(original, puzzle.goal_matrix)
-		push_to_heap(self.open_queue, node=original)
-		print(f'original node has heuristic value of {original.mannhattan}')
+		self.queue_node(original)
+		print(f'original node has heuristic value of {original.h_total}')
 
 	def queue_node(self, node: Gamestate) -> None:
 		"""Method to push value to queue if there wasn't already a better gamestate like this in the queue"""
 		node_as_bytes = node.rows.tobytes()
+		if not self.args.greedy:
+			node.g = node.moves
+		set_heuristic_values(node, self.puzzle.goal_matrix, self.args)
 		seen = bool(node_as_bytes in self.closed_queue)
 
 		if not seen or node.moves < self.closed_queue[node_as_bytes]:
 			push_to_heap(self.open_queue, node=node)
 			self.statistics.increment_time_complexity()
-
-		# try:
-		# 	if self.closed_queue[node_as_bytes] <= estimated_cost:
-		# 		return
-		# except KeyError:
-		# 	pass
-		#
-		# for i, (f, item) in enumerate(self.open_queue):
-		# 	if item == node:
-		# 		# print(f'i={i}, f={f}, and item={item.rows.node_as_bytes()}, estimated_cost = {estimated_cost}')
-		# 		if estimated_cost >= f:
-		# 			# print(f'since I\'ve already got {node.get_int_repr()} in my open_queue on a better path, I\'ll skip this one.')
-		# 			return
-		# 		else:
-		# 			# print(f'Deleting open_queue[{i}]')
-		# 			del self.open_queue[i]
-		# heapq.heappush(self.open_queue, (estimated_cost, node))
-		# print(f'after heappushing, heapq has size {len(self.open_queue)}')
 
 	def add_node_to_closed_queue(self, node: Gamestate) -> None:
 		"""Add gamestate node to the closed queue, and update it's value if it already existed"""
@@ -70,7 +55,6 @@ class Astar:
 				state.is_possible(direction)
 				successor = copy.deepcopy(state)
 				successor.do_move(direction)
-				set_heuristic_values(successor, self.puzzle.goal_matrix)
 				self.queue_node(node=successor)
 			except (AssertionError, KeyError):
 				pass
@@ -83,7 +67,6 @@ class Astar:
 		try:
 			as_bytes = node.rows.tobytes()
 			if heuristic_value >= self.closed_queue[as_bytes]:
-				# print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[as_bytes]}, b={as_bytes}')
 				return False
 		except KeyError:
 			pass
@@ -91,8 +74,7 @@ class Astar:
 			self.solution = node
 			print(f'Found solution!{self.solution}')
 			return True
-		# print(f'{i}-EXPANDING\tHeuristic_value={heuristic_value}, h_manhattan={heuristic_value - q.moves}\n{q}')
-		# print(q.get_heuristics())
+		# print(f'{i}-EXPANDING\tHeuristic_value={heuristic_value}, moves={node.moves}, node.g={node.g}\n')
 
 		self.spawn_successors(node)
 		return False
