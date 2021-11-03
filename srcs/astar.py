@@ -26,7 +26,6 @@ class Astar:
 		self.puzzle = puzzle
 		self.statistics = Statistics()
 		self.queue_node(original)
-		print(f'original node has heuristic value of {original.h_total}')
 
 	def queue_node(self, node: Gamestate) -> None:
 		"""Method to push value to queue if there wasn't already a better gamestate like this in the queue"""
@@ -72,9 +71,7 @@ class Astar:
 			pass
 		if np.array_equal(node.rows, self.puzzle.goal_matrix):
 			self.solution = node
-			print(f'Found solution!{self.solution}')
 			return True
-		# print(f'{i}-EXPANDING\tHeuristic_value={heuristic_value}, moves={node.moves}, node.g={node.g}\n')
 
 		self.spawn_successors(node)
 		return False

@@ -13,7 +13,6 @@ def count_inversions(puzzle: Puzzle) -> int:
 			b_val = puzzle.original_position[b // puzzle.size][b % puzzle.size]
 			if np.where(puzzle.goal_matrix == a_val) > np.where(puzzle.goal_matrix == b_val):
 				inversions += 1
-	print(f'{inversions} inversions')
 	return inversions
 
 
@@ -46,5 +45,4 @@ class PuzzleValidator:
 		og_zeropos = find_pos_in_array(puzzle.original_position)
 		goal_zeropos = find_pos_in_array(puzzle.goal_matrix)
 		emptytile_distance = abs(og_zeropos[0] - goal_zeropos[0]) + abs(og_zeropos[1] - goal_zeropos[1])
-		print(f'inversion_count is {inversion_count}, position from bottom is {emptytile_distance}')
 		return emptytile_distance % 2 == inversion_count % 2
