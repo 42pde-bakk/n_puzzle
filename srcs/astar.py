@@ -12,7 +12,7 @@ tiebreaker = 0
 def push_to_heap(queue: [], node: Gamestate) -> None:
 	"""Wrapper function to push to the heapq and increment the tiebreaker value"""
 	global tiebreaker
-	heapq.heappush(queue, (node.moves + node.total, node.total, tiebreaker, node))
+	heapq.heappush(queue, (node.g + node.h_total, node.h_total, tiebreaker, node))
 	tiebreaker += 1
 
 
@@ -26,11 +26,13 @@ class Astar:
 		self.puzzle = puzzle
 		self.statistics = Statistics()
 		self.queue_node(original)
-		print(f'original node has heuristic value of {original.mannhattan}')
+		print(f'original node has heuristic value of {original.h_total}')
 
 	def queue_node(self, node: Gamestate) -> None:
 		"""Method to push value to queue if there wasn't already a better gamestate like this in the queue"""
 		node_as_bytes = node.rows.tobytes()
+		if not self.args.greedy:
+			node.g = node.moves
 		set_heuristic_values(node, self.puzzle.goal_matrix)
 		seen = bool(node_as_bytes in self.closed_queue)
 
@@ -65,7 +67,6 @@ class Astar:
 		try:
 			as_bytes = node.rows.tobytes()
 			if heuristic_value >= self.closed_queue[as_bytes]:
-				# print(f'{i} heur_value{heuristic_value} >= {self.closed_queue[as_bytes]}, b={as_bytes}')
 				return False
 		except KeyError:
 			pass
@@ -73,8 +74,7 @@ class Astar:
 			self.solution = node
 			print(f'Found solution!{self.solution}')
 			return True
-		# print(f'{i}-EXPANDING\tHeuristic_value={heuristic_value}, h_manhattan={heuristic_value - q.moves}\n{q}')
-		# print(q.get_heuristics())
+		# print(f'{i}-EXPANDING\tHeuristic_value={heuristic_value}, moves={node.moves}, node.g={node.g}\n')
 
 		self.spawn_successors(node)
 		return False

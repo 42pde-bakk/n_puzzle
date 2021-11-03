@@ -36,8 +36,8 @@ class Gamestate:
 		self.zero_pos = (0, 0)
 		self.rows = np.ndarray
 		self.parent = None
-		self.mannhattan = self.misplaced = self.linear = self.total = 0
-		self.moves = 0
+		self.h_total = 0
+		self.g, self.moves = 0, 0
 
 	def __deepcopy__(self, memodict={}):
 		copy_object = Gamestate()
@@ -60,7 +60,7 @@ class Gamestate:
 		return f'moves: {self.moves}\n' \
 			f'mannhattan distance: {self.mannhattan}\n' \
 			f'misplaced tiles: {self.misplaced}\n' \
-			f'total H: {self.total}'
+			f'total H: {self.h_total}'
 
 	def __eq__(self, other):
 		return np.array_equal(self.rows, other.rows)

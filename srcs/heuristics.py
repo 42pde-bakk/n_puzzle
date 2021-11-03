@@ -27,7 +27,7 @@ def mannhattan_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> 
 def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray) -> None:
 	"""Set various heuristic values in the provided Gamestate class"""
 	# TODO Add arguments parsing
-	state.mannhattan = mannhattan_distance(state.rows, goal_matrix)
-	state.misplaced = mannhattan_distance(state.rows, goal_matrix)
+	mannhattan = mannhattan_distance(state.rows, goal_matrix)
+	misplaced = mannhattan_distance(state.rows, goal_matrix)
 	state.linear = 0
-	state.total = state.mannhattan + state.misplaced
+	state.h_total = mannhattan + misplaced
