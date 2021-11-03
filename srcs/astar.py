@@ -18,42 +18,25 @@ def push_to_heap(queue: [], node: Gamestate) -> None:
 
 class Astar:
 	"""Astar algorithm class"""
-	def __init__(self, puzzle: Puzzle, original: Gamestate):
+	def __init__(self, puzzle: Puzzle, original: Gamestate, args):
 		self.solution = None
+		self.args = args
 		self.open_queue = []
 		self.closed_queue = {}
 		self.puzzle = puzzle
 		self.statistics = Statistics()
-		set_heuristic_values(original, puzzle.goal_matrix)
-		push_to_heap(self.open_queue, node=original)
+		self.queue_node(original)
 		print(f'original node has heuristic value of {original.mannhattan}')
 
 	def queue_node(self, node: Gamestate) -> None:
 		"""Method to push value to queue if there wasn't already a better gamestate like this in the queue"""
 		node_as_bytes = node.rows.tobytes()
+		set_heuristic_values(node, self.puzzle.goal_matrix)
 		seen = bool(node_as_bytes in self.closed_queue)
 
 		if not seen or node.moves < self.closed_queue[node_as_bytes]:
 			push_to_heap(self.open_queue, node=node)
 			self.statistics.increment_time_complexity()
-
-		# try:
-		# 	if self.closed_queue[node_as_bytes] <= estimated_cost:
-		# 		return
-		# except KeyError:
-		# 	pass
-		#
-		# for i, (f, item) in enumerate(self.open_queue):
-		# 	if item == node:
-		# 		# print(f'i={i}, f={f}, and item={item.rows.node_as_bytes()}, estimated_cost = {estimated_cost}')
-		# 		if estimated_cost >= f:
-		# 			# print(f'since I\'ve already got {node.get_int_repr()} in my open_queue on a better path, I\'ll skip this one.')
-		# 			return
-		# 		else:
-		# 			# print(f'Deleting open_queue[{i}]')
-		# 			del self.open_queue[i]
-		# heapq.heappush(self.open_queue, (estimated_cost, node))
-		# print(f'after heappushing, heapq has size {len(self.open_queue)}')
 
 	def add_node_to_closed_queue(self, node: Gamestate) -> None:
 		"""Add gamestate node to the closed queue, and update it's value if it already existed"""
@@ -70,7 +53,6 @@ class Astar:
 				state.is_possible(direction)
 				successor = copy.deepcopy(state)
 				successor.do_move(direction)
-				set_heuristic_values(successor, self.puzzle.goal_matrix)
 				self.queue_node(node=successor)
 			except (AssertionError, KeyError):
 				pass
