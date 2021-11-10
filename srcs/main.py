@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import cProfile
+import pstats
 from argparse import ArgumentParser
 from srcs.puzzle import Puzzle
 from srcs.astar import Astar
@@ -34,13 +35,29 @@ def parse_arguments():
 
 def main(args) -> int:
 	"""Open the given argument, parse it, validate it and start the search"""
+	pr = cProfile.Profile()
 	with open(args.filepath, 'r') as f:
 		puzzle = Puzzle()
-		puzzle.parse_puzzle(f.read().splitlines())
+		try:
+			puzzle.parse_puzzle(f.read().splitlines())
+		except ValueError:
+			print('Puzzle is invalid', file=sys.stderr)
+			return 1
 
-	if PuzzleValidator.is_valid(puzzle) and PuzzleValidator.is_solvable(puzzle):
+	if not PuzzleValidator.is_valid(puzzle):
+		return 1
+
+	if PuzzleValidator.is_solvable(puzzle):
 		astar = Astar(puzzle, puzzle.create_starting_state(), args)
+		if args.cprofile:
+			pr.enable()
 		astar.solve()
+		if args.cprofile:
+			pr.disable()
+			stats = pstats.Stats(pr)
+			stats.sort_stats('tottime').print_stats(10)
+			return 0
+
 		if astar.solution is not None:
 			astar.statistics.show_statistics(astar.solution)
 			return 0
@@ -53,8 +70,8 @@ def main(args) -> int:
 
 if __name__ == "__main__":
 	arguments = parse_arguments()
-	if arguments.cprofile:
-		exit_code = cProfile.runctx('f(x)', {'f': main, 'x': arguments}, {})
-	else:
-		exit_code = main(parse_arguments())
+	# if arguments.cprofile:
+	# 	exit_code = cProfile.runctx('f(x)', {'f': main, 'x': arguments}, {})
+	# else:
+	exit_code = main(parse_arguments())
 	sys.exit(exit_code)
