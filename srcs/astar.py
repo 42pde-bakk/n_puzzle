@@ -59,7 +59,8 @@ class Astar:
 
 	def spawn_successors(self, state: Gamestate):
 		"""Spawn children of the most promising gamestate"""
-		# print(f'EXPANDING {state.h_total} {state.h_manhattan}\n{state}')
+		if self.args.verbose:
+			print(f'Expanding node with h_total: {state.h_total}\n{state}\n')
 		self.add_node_to_closed_queue(state)
 		for direction in Direction:
 			try:
@@ -89,10 +90,7 @@ class Astar:
 
 	def solve(self):
 		"""Keep deepening the Astar search until the queue empty or a solution has been found"""
-		start_time = time.time()
-		generation_amount = 0
+		self.statistics.start_time = time.time()
 		has_solution = False
 		while len(self.open_queue) > 0 and not has_solution:
 			has_solution = self.do_iteration()
-			generation_amount += 1
-		print(f'Ran {generation_amount} loops in {time.time() - start_time}s.')

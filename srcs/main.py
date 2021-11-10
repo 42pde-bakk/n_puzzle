@@ -14,7 +14,7 @@ def parse_arguments():
 	# action='store_true' to not require a new value after the argument
 	parser.add_argument('filepath', help='Filepath for the puzzle file.')
 	parser.add_argument('--cprofile', action='store_true', help='Run cProfile to see where most time is spent.')
-	parser.add_argument('--verbose', '-v', help='Print verbose information about each step of the Astar algorithm.')
+	parser.add_argument('--verbose', '-v', action='store_true', help='Print verbose information about each step of the Astar algorithm.')
 	parser.add_argument('--uniform', '-u', action='store_true',
 		help='Find the shortest path with just the movecost, no heuristic!')
 	parser.add_argument('--greedy', '-g', action='store_true', help='Run a greedy search. \

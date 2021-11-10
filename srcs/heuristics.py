@@ -42,7 +42,7 @@ def optimized_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> 
 
 def optimized_misplaced_tiles(state: Gamestate, goal_matrix: np.ndarray) -> int:
 	"""Take the misplaced tiles heuristic of the parent and edit it for the newly moved tile"""
-	state.h_misplaced = state.parent.h_manhattan
+	state.h_misplaced = state.parent.h_misplaced
 	p0 = state.parent.zero_pos  # x, y
 	c0 = state.zero_pos  # x, y
 
@@ -103,7 +103,7 @@ def set_heuristic_values_timeoptimized(state: Gamestate, goal_matrix: np.ndarray
 			# print(f'current_manhattan = {state.h_manhattan}\n{state}')
 			# exit(1)
 		if args.misplaced:
-			state.h_misplaced += optimized_misplaced_tiles(state.rows, goal_matrix)
+			state.h_misplaced += optimized_misplaced_tiles(state, goal_matrix)
 		if args.euclidean:
 			state.h_total += euclidean_distance(state.rows, goal_matrix)
 		if args.minkowski:
