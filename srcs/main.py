@@ -21,6 +21,7 @@ def parse_arguments():
 	heuristics_group = parser.add_argument_group('Heuristics', description='I dont speak Franch or no Chinese')
 	heuristics_group.add_argument('--manhattan', action='store_true', default=False, help='Use the Manhattan distance heuristic')
 	heuristics_group.add_argument('--misplaced', action='store_true', default=False, help='Use the amount of misplaced tiles as heuristic')
+	heuristics_group.add_argument('--euclidean', action='store_true', default=False, help='Use the Euclidean distance heuristic')
 	heuristics_group.add_argument('--minkowski', action='store_true', default=False, help='Use the Minkowski distance heuristic')
 
 	arguments = parser.parse_args()
