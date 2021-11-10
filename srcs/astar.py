@@ -2,7 +2,7 @@ import time
 import copy
 import heapq
 import numpy as np
-from srcs.heuristics import set_heuristic_values
+from srcs.heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
 from srcs.gamestate import Gamestate, Direction
 from srcs.statistics import Statistics
 from srcs.puzzle import Puzzle
@@ -26,14 +26,25 @@ class Astar:
 		self.closed_queue = {}
 		self.puzzle = puzzle
 		self.statistics = Statistics()
-		self.queue_node(original)
+		self.queue_first_node(original)
+
+	def queue_first_node(self, node: Gamestate) -> None:
+		"""Set heuristic values for the original gamestate and push to heap"""
+		node_as_bytes = node.rows.tobytes()
+		if not self.args.greedy:
+			node.g = node.moves
+		set_heuristic_values(node, self.puzzle.goal_matrix, self.args)
+		seen = bool(node_as_bytes in self.closed_queue)
+
+		if not seen or node.moves < self.closed_queue[node_as_bytes]:
+			push_to_heap(self.open_queue, node=node, statistics=self.statistics)
 
 	def queue_node(self, node: Gamestate) -> None:
 		"""Method to push value to queue if there wasn't already a better gamestate like this in the queue"""
 		node_as_bytes = node.rows.tobytes()
 		if not self.args.greedy:
 			node.g = node.moves
-		set_heuristic_values(node, self.puzzle.goal_matrix, self.args)
+		set_heuristic_values_timeoptimized(node, self.puzzle.goal_matrix, self.args)
 		seen = bool(node_as_bytes in self.closed_queue)
 
 		if not seen or node.moves < self.closed_queue[node_as_bytes]:
@@ -48,6 +59,7 @@ class Astar:
 
 	def spawn_successors(self, state: Gamestate):
 		"""Spawn children of the most promising gamestate"""
+		# print(f'EXPANDING {state.h_total} {state.h_manhattan}\n{state}')
 		self.add_node_to_closed_queue(state)
 		for direction in Direction:
 			try:
