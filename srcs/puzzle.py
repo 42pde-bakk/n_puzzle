@@ -73,7 +73,6 @@ class Puzzle:
 			to_spiralarray(
 				np.array(list(range(1, self.size ** 2)) + [0], dtype=np.uint16).reshape((self.size, self.size))
 			)
-		print(f'goal_matrix is {self.goal_matrix}')
 
 	def create_starting_state(self) -> Gamestate:
 		"""Copy original position to a Gamestate class instance"""
@@ -82,7 +81,6 @@ class Puzzle:
 		Gamestate.size = self.size
 		# noinspection PyTypeChecker
 		gamestate.zero_pos = find_pos_in_array(gamestate.rows)[::-1]  # Inverting so it's (x, y) instead of (y, x)
-		print(f'gamestate.parent={gamestate.parent}')
 		return gamestate
 
 	def readrows(self, rows: List[str]) -> np.ndarray:
@@ -97,5 +95,4 @@ class Puzzle:
 		"""Parse puzzle, don't validate yet"""
 		self.size = 0
 		self.original_position = self.readrows(rows)
-		print(f'og is:\n{self.original_position}\n\n')
 		self.set_goals()

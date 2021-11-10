@@ -1,9 +1,11 @@
+import time
 from srcs.gamestate import Gamestate
 
 
 class Statistics:
 	"""Utility class to show complexity and print the path taken to the puzzle solution"""
 	def __init__(self):
+		self.start_time = 0
 		self.__time_complexity = self.__size_complexity = 0
 
 	def increment_time_complexity(self):
@@ -26,6 +28,7 @@ class Statistics:
 	def show_statistics(self, gamestate: Gamestate) -> None:
 		"""Prints statistics of the search conform to subject requirements"""
 		Statistics.print_path(gamestate)
-		print(f'Time complexity: {self.__time_complexity}')
-		print(f'Size complexity: {self.__size_complexity}')
-		print(f'Total moves: {gamestate.moves}')
+		print(f'Time complexity: {self.__time_complexity}.')
+		print(f'Size complexity: {self.__size_complexity}.')
+		print(f'Total moves: {gamestate.moves}.')
+		print(f'Time duration: {round(time.time() - self.start_time, 4)} seconds.')

@@ -4,6 +4,11 @@ import sys
 
 
 class MyTestCase(unittest.TestCase):
+
+	def test_invalid_puzzles(self):
+		for nb in range(1, 6):
+			self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/invalid{nb}.txt'))
+
 	def test_unsolvable(self):
 		for filename in ["npuzzle-3-unsolvable.txt", "npuzzle-3-unsolvable2.txt", "npuzzle-4-unsolvable.txt"]:
 			# Idk why the exit code turns into 256 when I exit with 1 but OK
@@ -12,6 +17,10 @@ class MyTestCase(unittest.TestCase):
 	def test_solvable(self):
 		for filename in ["npuzzle-3-1.txt", "npuzzle-3-2.txt", "npuzzle-4-1.txt"]:
 			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/{filename}'))
+
+	def test_solvable_large(self):
+		for f in ['npuzzle-5-1.txt', 'npuzzle-4-greedytest.txt']:
+			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/{f} --greedy --manhattan --misplaced'))
 
 
 if __name__ == '__main__':
