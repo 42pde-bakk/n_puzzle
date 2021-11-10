@@ -24,10 +24,10 @@ def parse_arguments():
 	heuristics_group.add_argument('--euclidean', action='store_true', default=False, help='Use the Euclidean distance heuristic')
 	heuristics_group.add_argument('--minkowski', action='store_true', default=False, help='Use the Minkowski distance heuristic')
 
-	arguments = parser.parse_args()
-	if not (arguments.manhattan or arguments.misplaced or arguments.minkowski):
-		arguments.manhattan, arguments.misplaced = True, True
-	return arguments
+	args = parser.parse_args()
+	if not (args.manhattan or args.misplaced or args.minkowski or args.euclidean):
+		args.manhattan = True
+	return args
 
 
 def main(args) -> int:
