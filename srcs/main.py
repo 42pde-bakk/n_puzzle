@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import cProfile
 from argparse import ArgumentParser
 from srcs.puzzle import Puzzle
 from srcs.astar import Astar
@@ -11,10 +12,11 @@ def parse_arguments():
 
 	# action='store_true' to not require a new value after the argument
 	parser.add_argument('filepath', help='Filepath for the puzzle file.')
+	parser.add_argument('--cprofile', action='store_true', help='Run cProfile to see where most time is spent.')
 	parser.add_argument('--verbose', '-v', help='Print verbose information about each step of the Astar algorithm.')
 	parser.add_argument('--uniform', '-u', action='store_true',
 		help='Find the shortest path with just the movecost, no heuristic!')
-	parser.add_argument('--greedy', action='store_true', help='Run a greedy search. \
+	parser.add_argument('--greedy', '-g', action='store_true', help='Run a greedy search. \
 		This does not take the amount of moves into account and therefore might not produce the optimal path, \
 		but will find a solution quicker!', default=False)
 	# Heuristics
@@ -50,5 +52,9 @@ def main(args) -> int:
 
 
 if __name__ == "__main__":
-	exit_code = main(parse_arguments())
+	arguments = parse_arguments()
+	if arguments.cprofile:
+		exit_code = cProfile.runctx('f(x)', {'f': main, 'x': arguments}, {})
+	else:
+		exit_code = main(parse_arguments())
 	sys.exit(exit_code)
