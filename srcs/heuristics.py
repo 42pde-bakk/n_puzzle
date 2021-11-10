@@ -73,7 +73,8 @@ def minkowski_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray, p: i
 		for x, item in enumerate(current_matrix[y]):
 			if item != 0:
 				goal_pos = np.where(goal_matrix == item)
-				val += (y - goal_pos[0][0]) ** p + (x - goal_pos[1][0]) ** p
+				val1 = abs(y - goal_pos[0][0]) ** p + abs(x - goal_pos[1][0]) ** p
+				val += val1
 	return val ** (1 / p)
 
 
