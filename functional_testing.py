@@ -13,6 +13,10 @@ class MyTestCase(unittest.TestCase):
 		for filename in ["npuzzle-3-1.txt", "npuzzle-3-2.txt", "npuzzle-4-1.txt"]:
 			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/{filename}'))
 
+	def test_solvable_large(self):
+		for f in ['npuzzle-5-1.txt', 'npuzzle-4-greedytest.txt']:
+			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/{f} --greedy --manhattan --misplaced'))
+
 
 if __name__ == '__main__':
 	sys.path.append('srcs')
