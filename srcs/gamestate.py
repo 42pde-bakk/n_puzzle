@@ -41,6 +41,7 @@ class Gamestate:
 		self.h_misplaced = 0
 		self.h_euclidean = 0
 		self.h_minkowski = 0
+		self.h_correctlines = 0
 		self.g, self.moves = 0, 0
 
 	def __deepcopy__(self, memodict={}):
