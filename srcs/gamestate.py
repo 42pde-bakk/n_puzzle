@@ -38,6 +38,7 @@ class Gamestate:
 		self.parent = None
 		self.h_total = 0
 		self.h_manhattan = 0
+		self.h_weighted_manhattan = 0
 		self.h_misplaced = 0
 		self.h_euclidean = 0
 		self.h_minkowski = 0

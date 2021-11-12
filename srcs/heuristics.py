@@ -25,15 +25,15 @@ def optimized_misplaced_tiles(state: Gamestate, goal_matrix: np.ndarray) -> int:
 
 
 # Not a typo, Mannhattan is a real place in TF2
-def mannhattan_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:
+def mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> int:
 	"""Iterate through the matrix and sum the manhattan distances"""
-	val = 0
-	for y, row in enumerate(current_matrix):
+	state.h_manhattan = 0
+	for y, row in enumerate(state.rows):
 		for x, item in enumerate(row):
 			if item != 0:
 				goal_pos = np.where(goal_matrix == item)
-				val += abs(y - goal_pos[0][0]) + abs(x - goal_pos[1][0])
-	return val
+				state.h_manhattan += abs(y - goal_pos[0][0]) + abs(x - goal_pos[1][0])
+	return state.h_manhattan
 
 
 # Not a typo, Mannhattan is a real place in TF2
@@ -51,20 +51,40 @@ def optimized_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> 
 	return state.h_manhattan
 
 
-def weighted_manhattan_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:
+def weighted_manhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> int:
 	"""Similar to manhattan distance but give extra priority to edge pieces and even more to corner pieces"""
-	val = 0
-	for y, row in enumerate(current_matrix):
+	state.h_weighted_manhattan = 0
+	for y, row in enumerate(state.rows):
 		for x, item in enumerate(row):
 			if item != 0:
 				goal_pos = np.where(goal_matrix == item)
 				val2 = abs(y - goal_pos[0][0]) + abs(x - goal_pos[1][0])
-				if goal_pos[0][0] == 0 or goal_pos[0][0] == current_matrix.shape[0]:
+				if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0]:
 					val2 *= 2
-				if goal_pos[1][0] == 0 or goal_pos[1][0] == current_matrix.shape[0]:
+				if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0]:
 					val2 *= 2
-				val += val2
-	return val
+				state.h_weighted_manhattan += val2
+	return state.h_weighted_manhattan
+
+
+def optimized_weighted_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> int:
+	"""Take the manhattan distance of the parent gamestate and edit the distance of the newly moved tile"""
+	state.h_weighted_manhattan = state.parent.h_weighted_manhattan
+	p0 = state.parent.zero_pos  # x, y
+	c0 = state.zero_pos  # x, y
+	tile = state.parent.rows[c0[1]][c0[0]]
+	goal_pos = np.where(goal_matrix == tile)
+	newdist = abs(p0[1] - goal_pos[0][0]) + abs(p0[0] - goal_pos[1][0])
+	prevdist = abs(c0[1] - goal_pos[0][0]) + abs(c0[0] - goal_pos[1][0])
+	if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0]:
+		newdist *= 2
+		prevdist /= 2
+	if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0]:
+		newdist *= 2
+		prevdist /= 2
+	state.h_manhattan -= prevdist
+	state.h_manhattan += newdist
+	return state.h_manhattan
 
 
 # noinspection PyTypeChecker
@@ -131,10 +151,9 @@ def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray, args) -> Non
 	if not args.uniform:
 		total_h = 0
 		if args.manhattan:
-			state.h_manhattan = mannhattan_distance(state.rows, goal_matrix)
-			total_h += state.h_manhattan
+			total_h += mannhattan_distance(state, goal_matrix)
 		if args.weightedmanhattan:
-			total_h += weighted_manhattan_distance(state.rows, goal_matrix)
+			total_h += weighted_manhattan_distance(state, goal_matrix)
 		if args.misplaced:
 			total_h += misplaced_tiles(state.rows, goal_matrix)
 		if args.euclidean:
@@ -153,7 +172,7 @@ def set_heuristic_values_timeoptimized(state: Gamestate, goal_matrix: np.ndarray
 		if args.manhattan:
 			state.h_total += optimized_mannhattan_distance(state, goal_matrix)
 		if args.weightedmanhattan:
-			state.h_total += weighted_manhattan_distance(state.rows, goal_matrix)
+			state.h_total += optimized_weighted_mannhattan_distance(state.rows, goal_matrix)
 		if args.misplaced:
 			state.h_misplaced += optimized_misplaced_tiles(state, goal_matrix)
 		if args.euclidean:
