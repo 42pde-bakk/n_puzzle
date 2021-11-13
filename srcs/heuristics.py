@@ -52,14 +52,13 @@ def optimized_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> 
 
 
 def get_weight(puzzle_size: int) -> float:
-	if puzzle_size <= 3:
-		return 0.15
-	if puzzle_size == 4:
-		return 0.2
+	if puzzle_size <= 4:
+		return 0.1
 	if puzzle_size == 5:
-		return 0.075
-	else:
+		return 0.025
+	if puzzle_size == 6:
 		return 0.0375
+	return 0.06
 
 
 def weighted_manhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> float:
@@ -88,10 +87,10 @@ def optimized_weighted_mannhattan_distance(state: Gamestate, goal_matrix: np.nda
 	goal_pos = np.where(goal_matrix == tile)
 	newdist = abs(p0[1] - goal_pos[0][0]) + abs(p0[0] - goal_pos[1][0])
 	prevdist = abs(c0[1] - goal_pos[0][0]) + abs(c0[0] - goal_pos[1][0])
-	if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0]:
+	if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0] - 1:
 		newdist += get_weight(Gamestate.size)
 		prevdist -= get_weight(Gamestate.size)
-	if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0]:
+	if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0] - 1:
 		newdist += get_weight(Gamestate.size)
 		prevdist -= get_weight(Gamestate.size)
 	state.h_weighted_manhattan -= prevdist
