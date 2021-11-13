@@ -92,41 +92,42 @@ def optimized_weighted_mannhattan_distance(state: Gamestate, goal_matrix: np.nda
 
 
 # noinspection PyTypeChecker
-def correctlines(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:
-	val = 0
-	n, _ = current_matrix.shape
+def incorrectlines(state: Gamestate, goal_matrix: np.ndarray) -> int:
+	"""Return the amount of incorrect lines (rows and columns) in the puzzle"""
+	state.h_incorrectlines = 0
+	n, _ = state.rows.shape
 	for i in range(n):
-		if sum(current_matrix[i, :] == goal_matrix[i, :]) == n:
-			val += 1
-		if sum(current_matrix[:, i] == goal_matrix[:, i]) == n:
-			val += 1
-	return val
+		if sum(state.rows[i, :] == goal_matrix[i, :]) != n:
+			state.h_incorrectlines += 1
+		if sum(state.rows[:, i] == goal_matrix[:, i]) != n:
+			state.h_incorrectlines += 1
+	return state.h_incorrectlines
 
 
 # noinspection PyTypeChecker
-def optimized_correctlines(state: Gamestate, goal_matrix: np.ndarray) -> int:
+def optimized_incorrectlines(state: Gamestate, goal_matrix: np.ndarray) -> int:
 	n = Gamestate.size
-	state.h_correctlines = state.parent.h_correctlines
+	state.h_incorrectlines = state.parent.h_incorrectlines
 	current_emptytile_pos = state.zero_pos
 	parent_emptytile_pos = state.parent.zero_pos
 
-	if sum(state.parent.rows[parent_emptytile_pos[0], :] == goal_matrix[parent_emptytile_pos[0], :]) == n:
-		state.h_correctlines -= 1  # Check the parent's row that contained the empty tile
-	if sum(state.parent.rows[:, parent_emptytile_pos[1]] == goal_matrix[:, parent_emptytile_pos[1]]) == n:
-		state.h_correctlines -= 1  # Check the parent's column that contained the empty tile
-	if sum(state.parent.rows[current_emptytile_pos[0], :] == goal_matrix[current_emptytile_pos[0], :]) == n:
-		state.h_correctlines -= 1  # Check the parent's row that contains the empty tile in the current state
-	if sum(state.parent.rows[:, current_emptytile_pos[1]] == goal_matrix[:, current_emptytile_pos[1]]) == n:
-		state.h_correctlines -= 1  # Check the parent's column that contains the empty tile in the current state
-	if sum(state.rows[parent_emptytile_pos[0], :] == goal_matrix[parent_emptytile_pos[0], :]) == n:
-		state.h_correctlines += 1  # Check the parent's row that contained the empty tile
-	if sum(state.rows[:, parent_emptytile_pos[1]] == goal_matrix[:, parent_emptytile_pos[1]]) == n:
-		state.h_correctlines += 1  # Check the parent's column that contained the empty tile
-	if sum(state.rows[current_emptytile_pos[0], :] == goal_matrix[current_emptytile_pos[0], :]) == n:
-		state.h_correctlines += 1  # Check the parent's row that contains the empty tile in the current state
-	if sum(state.rows[:, current_emptytile_pos[1]] == goal_matrix[:, current_emptytile_pos[1]]) == n:
-		state.h_correctlines += 1  # Check the parent's column that contains the empty tile in the current state
-	return state.h_correctlines
+	if sum(state.parent.rows[parent_emptytile_pos[0], :] == goal_matrix[parent_emptytile_pos[0], :]) != n:
+		state.h_incorrectlines -= 1  # Check the parent's row that contained the empty tile
+	if sum(state.parent.rows[:, parent_emptytile_pos[1]] == goal_matrix[:, parent_emptytile_pos[1]]) != n:
+		state.h_incorrectlines -= 1  # Check the parent's column that contained the empty tile
+	if sum(state.parent.rows[current_emptytile_pos[0], :] == goal_matrix[current_emptytile_pos[0], :]) != n:
+		state.h_incorrectlines -= 1  # Check the parent's row that contains the empty tile in the current state
+	if sum(state.parent.rows[:, current_emptytile_pos[1]] == goal_matrix[:, current_emptytile_pos[1]]) != n:
+		state.h_incorrectlines -= 1  # Check the parent's column that contains the empty tile in the current state
+	if sum(state.rows[parent_emptytile_pos[0], :] == goal_matrix[parent_emptytile_pos[0], :]) != n:
+		state.h_incorrectlines += 1  # Check the parent's row that contained the empty tile
+	if sum(state.rows[:, parent_emptytile_pos[1]] == goal_matrix[:, parent_emptytile_pos[1]]) != n:
+		state.h_incorrectlines += 1  # Check the parent's column that contained the empty tile
+	if sum(state.rows[current_emptytile_pos[0], :] == goal_matrix[current_emptytile_pos[0], :]) != n:
+		state.h_incorrectlines += 1  # Check the parent's row that contains the empty tile in the current state
+	if sum(state.rows[:, current_emptytile_pos[1]] == goal_matrix[:, current_emptytile_pos[1]]) != n:
+		state.h_incorrectlines += 1  # Check the parent's column that contains the empty tile in the current state
+	return state.h_incorrectlines
 
 
 def euclidean_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> float:
@@ -164,8 +165,8 @@ def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray, args) -> Non
 			total_h += euclidean_distance(state.rows, goal_matrix)
 		if args.minkowski:
 			total_h += minkowski_distance(state.rows, goal_matrix, p=2)
-		if args.correctlines:
-			total_h += correctlines(state.rows, goal_matrix)
+		if args.incorrectlines:
+			total_h += incorrectlines(state, goal_matrix)
 		state.h_total = total_h
 
 
@@ -183,5 +184,5 @@ def set_heuristic_values_timeoptimized(state: Gamestate, goal_matrix: np.ndarray
 			state.h_total += euclidean_distance(state.rows, goal_matrix)
 		if args.minkowski:
 			state.h_total += minkowski_distance(state.rows, goal_matrix, p=2)
-		if args.correctlines:
-			state.h_total += optimized_correctlines(state, goal_matrix)
+		if args.incorrectlines:
+			state.h_total += optimized_incorrectlines(state, goal_matrix)

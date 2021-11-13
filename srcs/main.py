@@ -9,6 +9,7 @@ from validator import PuzzleValidator
 
 
 def parse_arguments():
+	"""Parse the CLI arguments"""
 	parser = ArgumentParser(description='Let\'s solve some N-puzzles ("taquin" in French) with the Astar algorithm')
 
 	# action='store_true' to not require a new value after the argument
@@ -27,10 +28,10 @@ def parse_arguments():
 	heuristics_group.add_argument('--misplaced', action='store_true', default=False, help='Use the amount of misplaced tiles as heuristic')
 	heuristics_group.add_argument('--euclidean', action='store_true', default=False, help='Use the Euclidean distance heuristic')
 	heuristics_group.add_argument('--minkowski', action='store_true', default=False, help='Use the Minkowski distance heuristic')
-	heuristics_group.add_argument('--correctlines', action='store_true', default=False, help='Count how many rows and columns are fully correct')
+	heuristics_group.add_argument('--incorrectlines', action='store_true', default=False, help='Count how many rows and columns are fully correct')
 
 	args = parser.parse_args()
-	if not (args.manhattan or args.weightedmanhattan or args.misplaced or args.minkowski or args.euclidean or args.correctlines):
+	if not (args.manhattan or args.weightedmanhattan or args.misplaced or args.minkowski or args.euclidean or args.incorrectlines):
 		args.weightedmanhattan = True
 	return args
 
@@ -63,8 +64,7 @@ def main(args) -> int:
 		if astar.solution is not None:
 			astar.statistics.show_statistics(astar.solution)
 			return 0
-		else:
-			print('I failed at solving the puzzle', file=sys.stderr)
+		print('I failed at solving the puzzle', file=sys.stderr)
 	else:
 		print('Puzzle is not solvable', file=sys.stderr)
 	return 1
@@ -75,5 +75,5 @@ if __name__ == "__main__":
 	# if arguments.cprofile:
 	# 	exit_code = cProfile.runctx('f(x)', {'f': main, 'x': arguments}, {})
 	# else:
-	exit_code = main(parse_arguments())
-	sys.exit(exit_code)
+	EXIT_CODE = main(parse_arguments())
+	sys.exit(EXIT_CODE)
