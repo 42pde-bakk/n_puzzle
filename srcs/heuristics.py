@@ -51,7 +51,7 @@ def optimized_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> 
 	return state.h_manhattan
 
 
-WEIGHT = 0.15
+WEIGHT = 0.075
 
 
 def weighted_manhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> float:
