@@ -2,10 +2,10 @@ import time
 import copy
 import heapq
 import numpy as np
-from srcs.heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
-from srcs.gamestate import Gamestate, Direction
-from srcs.statistics import Statistics
-from srcs.puzzle import Puzzle
+from heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
+from gamestate import Gamestate, Direction
+from statistics import Statistics
+from puzzle import Puzzle
 tiebreaker = 0
 
 

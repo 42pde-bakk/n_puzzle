@@ -3,9 +3,9 @@ import sys
 import cProfile
 import pstats
 from argparse import ArgumentParser
-from srcs.puzzle import Puzzle
-from srcs.astar import Astar
-from srcs.validator import PuzzleValidator
+from puzzle import Puzzle
+from astar import Astar
+from validator import PuzzleValidator
 
 
 def parse_arguments():

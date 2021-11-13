@@ -1,5 +1,5 @@
 import numpy as np
-from srcs.gamestate import Gamestate
+from gamestate import Gamestate
 
 
 def misplaced_tiles(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:

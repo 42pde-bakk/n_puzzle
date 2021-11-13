@@ -1,5 +1,5 @@
 import time
-from srcs.gamestate import Gamestate
+from gamestate import Gamestate
 
 
 class Statistics:
