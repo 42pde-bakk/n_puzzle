@@ -54,15 +54,16 @@ def optimized_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> 
 def weighted_manhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> int:
 	"""Similar to manhattan distance but give extra priority to edge pieces and even more to corner pieces"""
 	state.h_weighted_manhattan = 0
+
 	for y, row in enumerate(state.rows):
 		for x, item in enumerate(row):
 			if item != 0:
 				goal_pos = np.where(goal_matrix == item)
 				val2 = abs(y - goal_pos[0][0]) + abs(x - goal_pos[1][0])
-				if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0]:
-					val2 *= 2
-				if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0]:
-					val2 *= 2
+				if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0] - 1:
+					val2 += 1
+				if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0] - 1:
+					val2 += 1
 				state.h_weighted_manhattan += val2
 	return state.h_weighted_manhattan
 
@@ -77,14 +78,14 @@ def optimized_weighted_mannhattan_distance(state: Gamestate, goal_matrix: np.nda
 	newdist = abs(p0[1] - goal_pos[0][0]) + abs(p0[0] - goal_pos[1][0])
 	prevdist = abs(c0[1] - goal_pos[0][0]) + abs(c0[0] - goal_pos[1][0])
 	if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0]:
-		newdist *= 2
-		prevdist /= 2
+		newdist += 1
+		prevdist -= 1
 	if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0]:
-		newdist *= 2
-		prevdist /= 2
-	state.h_manhattan -= prevdist
-	state.h_manhattan += newdist
-	return state.h_manhattan
+		newdist += 1
+		prevdist -= 1
+	state.h_weighted_manhattan -= prevdist
+	state.h_weighted_manhattan += newdist
+	return state.h_weighted_manhattan
 
 
 # noinspection PyTypeChecker
@@ -172,7 +173,7 @@ def set_heuristic_values_timeoptimized(state: Gamestate, goal_matrix: np.ndarray
 		if args.manhattan:
 			state.h_total += optimized_mannhattan_distance(state, goal_matrix)
 		if args.weightedmanhattan:
-			state.h_total += optimized_weighted_mannhattan_distance(state.rows, goal_matrix)
+			state.h_total += optimized_weighted_mannhattan_distance(state, goal_matrix)
 		if args.misplaced:
 			state.h_misplaced += optimized_misplaced_tiles(state, goal_matrix)
 		if args.euclidean:
