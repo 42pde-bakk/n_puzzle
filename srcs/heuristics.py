@@ -51,7 +51,10 @@ def optimized_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> 
 	return state.h_manhattan
 
 
-def weighted_manhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> int:
+WEIGHT = 0.15
+
+
+def weighted_manhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> float:
 	"""Similar to manhattan distance but give extra priority to edge pieces and even more to corner pieces"""
 	state.h_weighted_manhattan = 0
 
@@ -61,14 +64,14 @@ def weighted_manhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> in
 				goal_pos = np.where(goal_matrix == item)
 				val2 = abs(y - goal_pos[0][0]) + abs(x - goal_pos[1][0])
 				if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0] - 1:
-					val2 += 1
+					val2 += WEIGHT
 				if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0] - 1:
-					val2 += 1
+					val2 += WEIGHT
 				state.h_weighted_manhattan += val2
 	return state.h_weighted_manhattan
 
 
-def optimized_weighted_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> int:
+def optimized_weighted_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> float:
 	"""Take the manhattan distance of the parent gamestate and edit the distance of the newly moved tile"""
 	state.h_weighted_manhattan = state.parent.h_weighted_manhattan
 	p0 = state.parent.zero_pos  # x, y
@@ -78,11 +81,11 @@ def optimized_weighted_mannhattan_distance(state: Gamestate, goal_matrix: np.nda
 	newdist = abs(p0[1] - goal_pos[0][0]) + abs(p0[0] - goal_pos[1][0])
 	prevdist = abs(c0[1] - goal_pos[0][0]) + abs(c0[0] - goal_pos[1][0])
 	if goal_pos[0][0] == 0 or goal_pos[0][0] == goal_matrix.shape[0]:
-		newdist += 1
-		prevdist -= 1
+		newdist += WEIGHT
+		prevdist -= WEIGHT
 	if goal_pos[1][0] == 0 or goal_pos[1][0] == goal_matrix.shape[0]:
-		newdist += 1
-		prevdist -= 1
+		newdist += WEIGHT
+		prevdist -= WEIGHT
 	state.h_weighted_manhattan -= prevdist
 	state.h_weighted_manhattan += newdist
 	return state.h_weighted_manhattan
