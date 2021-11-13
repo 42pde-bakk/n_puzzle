@@ -2,18 +2,17 @@ import time
 import copy
 import heapq
 import numpy as np
-from srcs.heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
-from srcs.gamestate import Gamestate, Direction
-from srcs.statistics import Statistics
-from srcs.puzzle import Puzzle
+from heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
+from gamestate import Gamestate, Direction
+from statistics import Statistics
+from puzzle import Puzzle
 tiebreaker = 0
 
 
-def push_to_heap(queue: [], node: Gamestate, statistics: Statistics) -> None:
+def push_to_heap(queue: [], node: Gamestate) -> None:
 	"""Wrapper function to push to the heapq and increment the tiebreaker value"""
 	global tiebreaker
 	heapq.heappush(queue, (node.g + node.h_total, node.h_total, tiebreaker, node))
-	statistics.increment_time_complexity()
 	tiebreaker += 1
 
 
@@ -37,7 +36,7 @@ class Astar:
 		seen = bool(node_as_bytes in self.closed_queue)
 
 		if not seen or node.moves < self.closed_queue[node_as_bytes]:
-			push_to_heap(self.open_queue, node=node, statistics=self.statistics)
+			push_to_heap(self.open_queue, node=node)
 
 	def queue_node(self, node: Gamestate) -> None:
 		"""Method to push value to queue if there wasn't already a better gamestate like this in the queue"""
@@ -48,7 +47,7 @@ class Astar:
 		seen = bool(node_as_bytes in self.closed_queue)
 
 		if not seen or node.moves < self.closed_queue[node_as_bytes]:
-			push_to_heap(self.open_queue, node=node, statistics=self.statistics)
+			push_to_heap(self.open_queue, node=node)
 
 	def add_node_to_closed_queue(self, node: Gamestate) -> None:
 		"""Add gamestate node to the closed queue, and update it's value if it already existed"""
@@ -76,6 +75,7 @@ class Astar:
 		"""Return value is to showcase whether we are at the end of our search
 			Either because we found a solution, or because we tried everything"""
 		heuristic_value, _, _, node = heapq.heappop(self.open_queue)
+		self.statistics.increment_time_complexity()
 		try:
 			as_bytes = node.rows.tobytes()
 			if heuristic_value >= self.closed_queue[as_bytes]:

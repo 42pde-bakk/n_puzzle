@@ -12,6 +12,5 @@ python3 -m venv venv
 
 ```shell script
 pip3 install -r requirements.txt
-export PYTHONPATH=$(pwd)
 python3 srcs/main.py puzzles/npuzzle-3-1.txt
 ```

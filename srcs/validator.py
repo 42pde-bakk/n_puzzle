@@ -1,7 +1,7 @@
 import sys
 import numpy as np
-from srcs.puzzle import Puzzle
-from srcs.utils.util_functions import find_pos_in_array
+from puzzle import Puzzle
+from utils.util_functions import find_pos_in_array
 
 
 def count_inversions(puzzle: Puzzle) -> int:

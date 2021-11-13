@@ -1,8 +1,8 @@
 import copy
 from typing import List
 import numpy as np
-from srcs.utils.util_functions import find_pos_in_array
-from srcs.gamestate import Gamestate
+from utils.util_functions import find_pos_in_array
+from gamestate import Gamestate
 
 
 # Create a spiral matrix from a given list
