@@ -15,11 +15,11 @@ class MyTestCase(unittest.TestCase):
 			self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/unsolvable/{filename}'))
 
 	def test_solvable(self):
-		for filename in ["npuzzle-3-1.txt", "npuzzle-3-2.txt", "npuzzle-4-1.txt"]:
+		for filename in ["3.txt", "3-1.txt", "4.txt"]:
 			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/{filename} --greedy'))
 
 	def test_solvable_large(self):
-		for f in ['npuzzle-5-1.txt', 'npuzzle-4-greedytest.txt']:
+		for f in ['5.txt', '4-1.txt']:
 			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/{f} --greedy --manhattan --misplaced'))
 
 

@@ -12,5 +12,5 @@ python3 -m venv venv
 
 ```shell script
 pip3 install -r requirements.txt
-python3 srcs/main.py puzzles/npuzzle-3-1.txt
+python3 srcs/main.py puzzles/3.txt
 ```

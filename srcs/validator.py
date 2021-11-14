@@ -5,6 +5,7 @@ from utils.util_functions import find_pos_in_array
 
 
 def count_inversions(puzzle: Puzzle) -> int:
+	"""Return the amount of inversions in the puzzle"""
 	inversions = 0
 	for a in range(puzzle.size ** 2 - 1):
 		for b in range(a + 1, puzzle.size ** 2):

@@ -4,7 +4,7 @@ import heapq
 import numpy as np
 from heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
 from gamestate import Gamestate, Direction
-from statistics import Statistics
+from statistics_class import Statistics
 from puzzle import Puzzle
 tiebreaker = 0
 
