@@ -10,7 +10,11 @@ If you want to run it in a virtual environment do:
 python3 -m venv venv
 ```
 
+Install the dependencies and run it like so:
+
 ```shell script
 pip3 install -r requirements.txt
 python3 srcs/main.py puzzles/3.txt
 ```
+
+## Project status: [![N-puzzle status](https://badge42.herokuapp.com/api/project/pde-bakk/n-puzzle)](https://github.com/JaeSeoKim/badge42)
