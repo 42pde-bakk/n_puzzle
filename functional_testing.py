@@ -3,24 +3,60 @@ import os
 import sys
 
 
-class MyTestCase(unittest.TestCase):
+class TestInvalidPuzzles(unittest.TestCase):
+	def test1(self):
+		self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/invalid/invalid{1}.txt'))
 
-	def test_invalid_puzzles(self):
-		for nb in range(1, 6):
-			self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/invalid/invalid{nb}.txt'))
+	def test2(self):
+		self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/invalid/invalid{2}.txt'))
 
-	def test_unsolvable(self):
-		for filename in ["3.txt", "3b.txt", "4.txt"]:
-			# Idk why the exit code turns into 256 when I exit with 1 but OK
-			self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/unsolvable/{filename}'))
+	def test3(self):
+		self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/invalid/invalid{3}.txt'))
 
-	def test_solvable(self):
-		for filename in ["3.txt", "3-1.txt", "4.txt"]:
-			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/{filename} --greedy'))
+	def test4(self):
+		self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/invalid/invalid{4}.txt'))
 
-	def test_solvable_large(self):
-		for f in ['5.txt', '4-1.txt']:
-			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/{f} --greedy --manhattan --misplaced'))
+	def test5(self):
+		self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/invalid/invalid{5}.txt'))
+
+
+class TestUnsolvablePuzzles(unittest.TestCase):
+	def test3(self):
+		self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/unsolvable/3.txt'))
+
+	def test3b(self):
+		self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/unsolvable/3b.txt'))
+
+	def test4(self):
+		self.assertEqual(256, os.system(f'python3 srcs/main.py puzzles/unsolvable/4.txt'))
+
+
+class TestSolvablePuzzles(unittest.TestCase):
+	def test3(self):
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/3.txt --greedy'))
+
+	def test3_1(self):
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/3-1.txt --greedy'))
+
+	def test4(self):
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4.txt --greedy'))
+
+
+class TestLargeSolvablePuzzles(unittest.TestCase):
+	def test4(self):
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4-1.txt --greedy'))
+
+	def test4_hard(self):
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4-HARD.txt --greedy'))
+
+	def test5(self):
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/5.txt --greedy'))
+
+	def test6(self):
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/6.txt --greedy'))
+
+	def test7(self):
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/7.txt --greedy'))
 
 
 if __name__ == '__main__':
