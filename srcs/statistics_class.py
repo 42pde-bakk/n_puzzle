@@ -31,7 +31,7 @@ class Statistics:
 
 	def show_statistics(self, gamestate: Gamestate) -> None:
 		"""Prints statistics of the search conform to subject requirements"""
-		self.print_path(gamestate)
+		# self.print_path(gamestate)
 		if self.maxrecursiondepth_reached:
 			print(f'While printing the path to the solution, we hit the recursion limit of {sys.getrecursionlimit()}.')
 		print(f'Time complexity: {self.__time_complexity}.')

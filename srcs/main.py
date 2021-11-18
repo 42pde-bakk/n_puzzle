@@ -78,7 +78,7 @@ def main(args) -> int:
 
 		if astar.solution is not None:
 			astar.statistics.show_statistics(astar.solution)
-			return 0
+			return astar.solution.moves
 		print('I failed at solving the puzzle', file=sys.stderr)
 	else:
 		print('Puzzle is not solvable', file=sys.stderr)
@@ -87,4 +87,5 @@ def main(args) -> int:
 
 if __name__ == "__main__":
 	EXIT_CODE = main(parse_arguments())
+	print(EXIT_CODE)
 	sys.exit(EXIT_CODE)
