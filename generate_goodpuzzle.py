@@ -1,9 +1,3 @@
-# import os
-#
-# puzzleCommand = "python npuzzle-gen.py --solvable 3 > tmp.txt"
-# a = os.system(puzzleCommand)
-# print(a)
-
 import subprocess
 import shutil
 
@@ -12,7 +6,6 @@ PUZZLE_SIZE = 3
 TARGET_MOVES = 31
 
 puzzlecmd = f'python npuzzle-gen.py 3 -s > {TEMPFILE}'
-
 searchcmd = f'python srcs/main.py {TEMPFILE} --manhattan'
 maxmoves = i = 0
 while True:
