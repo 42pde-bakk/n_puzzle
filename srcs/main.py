@@ -4,9 +4,9 @@ import cProfile
 import pstats
 from argparse import ArgumentParser
 from puzzle import Puzzle
-from astar import Astar
-from beamsearch import Beamsearch
-from idastar import IdaStar
+from Algos.astar import Astar
+from Algos.beamsearch import Beamsearch
+from Algos.idastar import IdaStar
 from validator import PuzzleValidator
 
 
