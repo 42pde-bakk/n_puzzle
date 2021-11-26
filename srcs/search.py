@@ -1,5 +1,7 @@
 import copy
 import heapq
+from typing import List
+
 import numpy as np
 from heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
 from gamestate import Gamestate, Direction
@@ -54,6 +56,19 @@ class Search:
 
 		if node_as_bytes not in self.closed_queue or self.closed_queue[node_as_bytes] > node.g:
 			self.closed_queue[node_as_bytes] = node.g
+
+	def get_successors(self, state: Gamestate) -> List[Gamestate]:
+		arr = []
+		for direction in Direction:
+			try:
+				state.is_possible(direction)
+				successor = copy.deepcopy(state)
+				successor.do_move(direction)
+				set_heuristic_values_timeoptimized(successor, self.puzzle.goal_matrix, self.args)
+				arr.append(successor)
+			except (AssertionError, KeyError):
+				pass
+		return arr
 
 	def spawn_successors(self, state: Gamestate):
 		"""Spawn children of the most promising gamestate"""
