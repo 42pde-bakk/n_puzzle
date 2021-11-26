@@ -1,5 +1,7 @@
 import copy
 import heapq
+from typing import List
+
 import numpy as np
 from heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
 from gamestate import Gamestate, Direction
@@ -42,7 +44,6 @@ class Search:
 		node_as_bytes = node.rows.tobytes()
 		if not self.args.greedy:
 			node.g = node.moves
-		set_heuristic_values_timeoptimized(node, self.puzzle.goal_matrix, self.args)
 		seen = bool(node_as_bytes in self.closed_queue)
 
 		if not seen or node.moves < self.closed_queue[node_as_bytes]:
@@ -55,19 +56,23 @@ class Search:
 		if node_as_bytes not in self.closed_queue or self.closed_queue[node_as_bytes] > node.g:
 			self.closed_queue[node_as_bytes] = node.g
 
+	def get_successors(self, state: Gamestate) -> List[Gamestate]:
+		arr = []
+		for direction in Direction:
+			if state.is_possible(direction):
+				successor = copy.deepcopy(state)
+				successor.do_move(direction)
+				set_heuristic_values_timeoptimized(successor, self.puzzle.goal_matrix, self.args)
+				arr.append(successor)
+		return arr
+
 	def spawn_successors(self, state: Gamestate):
 		"""Spawn children of the most promising gamestate"""
 		if self.args.verbose:
 			print(f'Expanding node with h_total: {state.h_total}\n{state}\n')
 		self.add_node_to_closed_queue(state)
-		for direction in Direction:
-			try:
-				state.is_possible(direction)
-				successor = copy.deepcopy(state)
-				successor.do_move(direction)
-				self.queue_node(node=successor)
-			except (AssertionError, KeyError):
-				pass
+		for successor in self.get_successors(state):
+			self.queue_node(node=successor)
 		self.statistics.track_size_complexity(len(self.open_queue) + len(self.closed_queue))
 
 	def explore_node(self, node: tuple):

@@ -70,13 +70,20 @@ class Gamestate:
 	def is_possible(self, direction: Direction) -> bool:
 		"""Returns whether the move in this direction is possible"""
 		if direction == Direction.UP:
-			assert self.zero_pos[1] != 0
+			if self.zero_pos[1] == 0:
+				return False
+			# assert self.zero_pos[1] != 0
 		elif direction == Direction.DOWN:
-			assert self.zero_pos[1] < Gamestate.size - 1
+			if not self.zero_pos[1] < Gamestate.size - 1:
+				return False
+			# assert self.zero_pos[1] < Gamestate.size - 1
 		elif direction == Direction.LEFT:
-			assert self.zero_pos[0] > 0
-		else:
-			assert self.zero_pos[0] < Gamestate.size - 1
+			if not self.zero_pos[0] > 0:
+				return False
+			# assert self.zero_pos[0] > 0
+		elif not self.zero_pos[0] < Gamestate.size - 1:
+			return False
+			# assert self.zero_pos[0] < Gamestate.size - 1
 		return True
 
 	def do_move(self, direction: Direction):

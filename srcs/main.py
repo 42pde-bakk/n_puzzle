@@ -6,6 +6,7 @@ from argparse import ArgumentParser
 from puzzle import Puzzle
 from astar import Astar
 from beamsearch import Beamsearch
+from idastar import IdaStar
 from validator import PuzzleValidator
 
 
@@ -47,7 +48,7 @@ def parse_arguments():
 			args.minkowski or args.euclidean or args.incorrectlines):
 		args.manhattan = True
 
-	if args.algo != 'beamsearch' and args.algo != 'astar':
+	if args.algo not in ['astar', 'beamsearch', 'idastar']:
 		args.algo = 'astar'
 	try:
 		args.beamsize = int(args.beamsize)
@@ -83,11 +84,12 @@ def main(args) -> int:
 		if args.algo == 'beamsearch':
 			search = Beamsearch(puzzle, puzzle.create_starting_state(), args)
 			Beamsearch.beamsize = args.beamsize
+		elif args.algo == 'idastar':
+			search = IdaStar(puzzle, puzzle.create_starting_state(), args)
 		else:
 			search = Astar(puzzle, puzzle.create_starting_state(), args)
 		if args.cprofile:
 			pr.enable()
-		search.solve()
 		try:
 			search.solve()
 		except KeyboardInterrupt:
