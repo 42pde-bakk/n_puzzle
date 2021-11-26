@@ -8,6 +8,7 @@ TARGET_MOVES = 31
 puzzlecmd = f'python npuzzle-gen.py 3 -s > {TEMPFILE}'
 searchcmd = f'python srcs/main.py {TEMPFILE} --manhattan'
 maxmoves = i = 0
+# For this to work, your program needs to have the amount of moves as exit status
 while True:
     i += 1
     subprocess.Popen(puzzlecmd, stdout=subprocess.PIPE, shell=True)
