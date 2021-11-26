@@ -22,6 +22,8 @@ class Statistics:
 
 	def print_path(self, gamestate: Gamestate) -> None:
 		"""Recursively prints the path from the starting position (top) to the solution (bottom)"""
+		if gamestate is None:
+			return
 		if gamestate.parent is not None:
 			try:
 				self.print_path(gamestate.parent)
@@ -36,5 +38,6 @@ class Statistics:
 			print(f'While printing the path to the solution, we hit the recursion limit of {sys.getrecursionlimit()}.')
 		print(f'Time complexity: {self.__time_complexity}.')
 		print(f'Size complexity: {self.__size_complexity}.')
-		print(f'Total moves: {gamestate.moves}.')
+		if gamestate is not None:
+			print(f'Total moves: {gamestate.moves}.')
 		print(f'Time duration: {round(time.time() - self.start_time, 4)} seconds.')

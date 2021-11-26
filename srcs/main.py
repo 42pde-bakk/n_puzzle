@@ -25,6 +25,7 @@ def parse_arguments():
 		but will find a solution quicker!', default=False)
 
 	parser.add_argument('--algo', action='store', default='astar')
+	parser.add_argument('--beamsize', action='store', default=100)
 
 	# Heuristics
 	heuristics_group = parser.add_argument_group('Heuristics', description='Argument group for heuristics')
@@ -45,9 +46,15 @@ def parse_arguments():
 	if not (args.manhattan or args.weightedmanhattan or args.misplaced or
 			args.minkowski or args.euclidean or args.incorrectlines):
 		args.manhattan = True
-	print(f'algo is {args.algo}')
+
 	if args.algo != 'beamsearch' and args.algo != 'astar':
 		args.algo = 'astar'
+	try:
+		args.beamsize = int(args.beamsize)
+	except ValueError:
+		print(f'Error. "{args.beamsize}" is not a valid integer for the beamsize', file=sys.stderr)
+		exit(1)
+
 	if args.uniform and args.greedy:
 		print('You can\'t run both a uniform and a greedy search at the same time, dummy!\n'
 				'That\'d just be a uniform search', file=sys.stderr)
@@ -75,19 +82,24 @@ def main(args) -> int:
 	if PuzzleValidator.is_solvable(puzzle):
 		if args.algo == 'beamsearch':
 			search = Beamsearch(puzzle, puzzle.create_starting_state(), args)
+			Beamsearch.beamsize = args.beamsize
 		else:
 			search = Astar(puzzle, puzzle.create_starting_state(), args)
 		if args.cprofile:
 			pr.enable()
 		search.solve()
+		try:
+			search.solve()
+		except KeyboardInterrupt:
+			pass
 		if args.cprofile:
 			pr.disable()
 			stats = pstats.Stats(pr)
 			stats.sort_stats('tottime').print_stats(10)
 			return 0
 
+		search.statistics.show_statistics(search.solution)
 		if search.solution is not None:
-			search.statistics.show_statistics(search.solution)
 			return 0
 		print('I failed at solving the puzzle', file=sys.stderr)
 	else:
