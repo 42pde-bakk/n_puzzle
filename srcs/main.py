@@ -7,6 +7,7 @@ from puzzle import Puzzle
 from Algos.astar import Astar
 from Algos.beamsearch import Beamsearch
 from Algos.idastar import IdaStar
+from Algos.bidirectional import BidirectionalSearch
 from validator import PuzzleValidator
 
 
@@ -48,7 +49,7 @@ def parse_arguments():
 			args.minkowski or args.euclidean or args.incorrectlines):
 		args.manhattan = True
 
-	if args.algo not in ['astar', 'beamsearch', 'idastar']:
+	if args.algo not in ['astar', 'beamsearch', 'idastar', 'bidirectional']:
 		args.algo = 'astar'
 	try:
 		args.beamsize = int(args.beamsize)
@@ -86,6 +87,8 @@ def main(args) -> int:
 			Beamsearch.beamsize = args.beamsize
 		elif args.algo == 'idastar':
 			search = IdaStar(puzzle, puzzle.create_starting_state(), args)
+		elif args.algo == 'bidirectional':
+			search = BidirectionalSearch(puzzle, puzzle.create_starting_state(), args)
 		else:
 			search = Astar(puzzle, puzzle.create_starting_state(), args)
 		if args.cprofile:
