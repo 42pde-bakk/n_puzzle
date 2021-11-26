@@ -5,6 +5,7 @@ import pstats
 from argparse import ArgumentParser
 from puzzle import Puzzle
 from astar import Astar
+from beamsearch import Beamsearch
 from validator import PuzzleValidator
 
 
@@ -22,6 +23,9 @@ def parse_arguments():
 	parser.add_argument('--greedy', '-g', action='store_true', help='Run a greedy search. \
 		This does not take the amount of moves into account and therefore might not produce the optimal path, \
 		but will find a solution quicker!', default=False)
+
+	parser.add_argument('--algo', action='store', default='astar')
+
 	# Heuristics
 	heuristics_group = parser.add_argument_group('Heuristics', description='Argument group for heuristics')
 	heuristics_group.add_argument('--manhattan', action='store_true', default=False,
@@ -40,7 +44,10 @@ def parse_arguments():
 	args = parser.parse_args()
 	if not (args.manhattan or args.weightedmanhattan or args.misplaced or
 			args.minkowski or args.euclidean or args.incorrectlines):
-		args.weightedmanhattan = True
+		args.manhattan = True
+	print(f'algo is {args.algo}')
+	if args.algo != 'beamsearch' and args.algo != 'astar':
+		args.algo = 'astar'
 	if args.uniform and args.greedy:
 		print('You can\'t run both a uniform and a greedy search at the same time, dummy!\n'
 				'That\'d just be a uniform search', file=sys.stderr)
@@ -66,18 +73,21 @@ def main(args) -> int:
 		return 1
 
 	if PuzzleValidator.is_solvable(puzzle):
-		astar = Astar(puzzle, puzzle.create_starting_state(), args)
+		if args.algo == 'beamsearch':
+			search = Beamsearch(puzzle, puzzle.create_starting_state(), args)
+		else:
+			search = Astar(puzzle, puzzle.create_starting_state(), args)
 		if args.cprofile:
 			pr.enable()
-		astar.solve()
+		search.solve()
 		if args.cprofile:
 			pr.disable()
 			stats = pstats.Stats(pr)
 			stats.sort_stats('tottime').print_stats(10)
 			return 0
 
-		if astar.solution is not None:
-			astar.statistics.show_statistics(astar.solution)
+		if search.solution is not None:
+			search.statistics.show_statistics(search.solution)
 			return 0
 		print('I failed at solving the puzzle', file=sys.stderr)
 	else:
