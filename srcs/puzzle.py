@@ -83,6 +83,13 @@ class Puzzle:
 		gamestate.zero_pos = find_pos_in_array(gamestate.rows)[::-1]  # Inverting so it's (x, y) instead of (y, x)
 		return gamestate
 
+	def create_reverse_puzzle(self):
+		reverse = Puzzle()
+		reverse.size = self.size
+		reverse.goal_matrix = self.original_position.copy()
+		reverse.original_position = self.goal_matrix.copy()
+		return reverse
+
 	def readrows(self, rows: List[str]) -> np.ndarray:
 		"""Create np array containing all the rows"""
 		ints = []

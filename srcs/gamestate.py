@@ -73,12 +73,12 @@ class Gamestate:
 			if self.zero_pos[1] == 0:
 				return False
 		elif direction == Direction.DOWN:
-			if not self.zero_pos[1] < Gamestate.size - 1:
+			if self.zero_pos[1] >= Gamestate.size - 1:
 				return False
 		elif direction == Direction.LEFT:
-			if not self.zero_pos[0] > 0:
+			if self.zero_pos[0] == 0:
 				return False
-		elif not self.zero_pos[0] < Gamestate.size - 1:
+		elif self.zero_pos[0] >= Gamestate.size - 1:
 			return False
 		return True
 

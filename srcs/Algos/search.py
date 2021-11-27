@@ -81,10 +81,11 @@ class Search:
 		try:
 			as_bytes = state.rows.tobytes()
 			if heuristic_value >= self.closed_queue[as_bytes]:
-				return
+				return None
 		except KeyError:
 			pass
 		if np.array_equal(state.rows, self.puzzle.goal_matrix):
 			self.solution = state
-			return
+			return state
 		self.spawn_successors(state)
+		return state

@@ -1,13 +1,10 @@
 import time
-import copy
 from puzzle import Puzzle
 from collections import deque
-from search import Search
+from Algos.search import Search
 import numpy as np
-from gamestate import Gamestate, Direction
+from gamestate import Gamestate
 from math import inf
-from heuristics import set_heuristic_values, set_heuristic_values_timeoptimized
-
 
 FOUND = -2
 NOT_FOUND = -1

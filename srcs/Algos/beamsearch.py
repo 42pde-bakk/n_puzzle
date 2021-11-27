@@ -2,7 +2,7 @@ import time
 import heapq
 from gamestate import Gamestate
 from puzzle import Puzzle
-from search import Search
+from Algos.search import Search
 
 
 class Beamsearch(Search):
