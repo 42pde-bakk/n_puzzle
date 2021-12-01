@@ -90,34 +90,22 @@ def linear_conflicts(state: Gamestate) -> int:
 	return state.h_linearconflict
 
 
+# https://medium.com/swlh/looking-into-k-puzzle-heuristics-6189318eaca2
 def optimized_linear_conflicts(state: Gamestate) -> int:
 	state.h_linearconflict = state.parent.h_linearconflict
 	p0 = state.parent.zero_pos  # x, y
 	c0 = state.zero_pos  # x, y
-	# for i in range(state.size):
-	# 	print(state.parent.rows[i], ' => ', state.rows[i])
-	# print()
 
-	# print(f'p0={p0}, c0={c0}')
 	if p0[0] == c0[0]:
 		# the empty tile was moved along the column
 		for linenb in [p0[1], c0[1]]:
-			# print(f'recalculating row {linenb}')
-			oldval = line_conflicts(state.parent.rows[linenb], linenb, 0)
-			newval = line_conflicts(state.rows[linenb], linenb, 0)
-			# print(f'old = {oldval}, new = {newval}')
-			state.h_linearconflict -= oldval
-			state.h_linearconflict += newval
+			state.h_linearconflict -= line_conflicts(state.parent.rows[linenb], linenb, 0)
+			state.h_linearconflict += line_conflicts(state.rows[linenb], linenb, 0)
 	else:
 		# the empty tile was moved along the row
 		for linenb in [p0[0], c0[0]]:
-			# print(f'recalculating column {linenb}')
-			oldval = line_conflicts(state.parent.rows[:, linenb], linenb, 1)
-			newval = line_conflicts(state.rows[:, linenb], linenb, 1)
-			state.h_linearconflict -= oldval
-			state.h_linearconflict += newval
-	# print(f'parent had value {state.parent.h_linearconflict}, son had value {state.h_linearconflict}')
-	# exit(1)
+			state.h_linearconflict -= line_conflicts(state.parent.rows[:, linenb], linenb, 1)
+			state.h_linearconflict += line_conflicts(state.rows[:, linenb], linenb, 1)
 	return state.h_linearconflict
 
 
