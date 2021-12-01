@@ -32,22 +32,23 @@ def parse_arguments():
 	# Heuristics
 	heuristics_group = parser.add_argument_group('Heuristics', description='Argument group for heuristics')
 	heuristics_group.add_argument('--manhattan', action='store_true', default=False,
-	                              help='Use the Manhattan distance heuristic')
+	                              help='Manhattan distance heuristic')
+	heuristics_group.add_argument('--linearconflict', action='store_true', default=False,
+	                              help='The amount of tiles that are in the right row/column but in the wrong order')
 	heuristics_group.add_argument('--weightedmanhattan', action='store_true', default=False,
-	                              help='Use the Manhattan distance heuristic but give extra priority to edge and especially corner pieces')
+	                              help='Manhattan distance heuristic but give extra priority to edge and especially corner pieces')
 	heuristics_group.add_argument('--misplaced', action='store_true', default=False,
-	                              help='Use the amount of misplaced tiles as heuristic')
+	                              help='The amount of misplaced tiles as heuristic')
 	heuristics_group.add_argument('--euclidean', action='store_true', default=False,
-	                              help='Use the Euclidean distance heuristic')
+	                              help='Euclidean distance heuristic')
 	heuristics_group.add_argument('--minkowski', action='store_true', default=False,
-	                              help='Use the Minkowski distance heuristic')
-	heuristics_group.add_argument('--incorrectlines', action='store_true', default=False,
-	                              help='Count how many rows and columns are fully correct')
+	                              help='Minkowski distance heuristic')
 
 	args = parser.parse_args()
 	if not (args.manhattan or args.weightedmanhattan or args.misplaced or
-			args.minkowski or args.euclidean or args.incorrectlines):
+			args.minkowski or args.euclidean or args.linearconflict):
 		args.manhattan = True
+		args.linearconflict = True
 
 	if args.algo not in ['astar', 'beamsearch', 'idastar', 'bidirectional']:
 		args.algo = 'astar'

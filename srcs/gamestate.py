@@ -38,11 +38,11 @@ class Gamestate:
 		self.parent = None
 		self.h_total = 0
 		self.h_manhattan = 0
+		self.h_linearconflict = 0
 		self.h_weighted_manhattan = 0
 		self.h_misplaced = 0
 		self.h_euclidean = 0
 		self.h_minkowski = 0
-		self.h_incorrectlines = 0
 		self.g, self.moves = 0, 0
 
 	def __deepcopy__(self, memodict={}):
