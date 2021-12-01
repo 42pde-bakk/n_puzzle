@@ -16,7 +16,7 @@ def parse_arguments():
 	parser = ArgumentParser(description='Let\'s solve some N-puzzles ("taquin" in French) with the Astar algorithm')
 
 	# action='store_true' to not require a new value after the argument
-	parser.add_argument('filepath', help='Filepath for the puzzle file.')
+	parser.add_argument('filepath', nargs='?', help='Filepath for the puzzle file.', default=None)
 	parser.add_argument('--cprofile', action='store_true', help='Run cProfile to see where most time is spent.')
 	parser.add_argument('--verbose', '-v', action='store_true',
 	                    help='Print verbose information about each step of the Astar algorithm.')
@@ -66,14 +66,17 @@ def parse_arguments():
 def main(args) -> int:
 	"""Open the given argument, parse it, validate it and start the search"""
 	pr = cProfile.Profile()
+	puzzle = Puzzle()
 	try:
-		with open(args.filepath, 'r') as f:
-			puzzle = Puzzle()
-			try:
-				puzzle.parse_puzzle(f.read().splitlines())
-			except ValueError:
-				print('Puzzle is invalid', file=sys.stderr)
-				return 1
+		if args.filepath is not None:
+			with open(args.filepath, 'r') as f:
+				try:
+					puzzle.parse_puzzle(f.read().splitlines())
+				except ValueError:
+					print('Puzzle is invalid', file=sys.stderr)
+					return 1
+		else:
+			puzzle.create_random_state()
 	except FileNotFoundError:
 		print(f'{args.filepath} does not exist, please provide a valid filepath to the puzzle.', file=sys.stderr)
 		return 1

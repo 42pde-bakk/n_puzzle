@@ -1,8 +1,11 @@
 import copy
 from typing import List
 import numpy as np
+import os
+import sys
 from utils.util_functions import find_pos_in_array
 from gamestate import Gamestate
+from generate_puzzle import make_puzzle
 
 
 # Create a spiral matrix from a given list
@@ -103,3 +106,30 @@ class Puzzle:
 		self.size = 0
 		self.original_position = self.readrows(rows)
 		self.set_goals()
+
+	def create_random_state(self):
+		size = input(f'Dear {os.environ["USER"]}, what size do you want your puzzle to be? ')
+		try:
+			size = int(size)
+		except ValueError:
+			print(f'Are you sure {size} is a valid size?', file=sys.stderr)
+			sys.exit(1)
+		solvable_input = input(f'Dear {os.environ["USER"]}, should the puzzle be solvable? (Y/N) ').lower()
+		solvable = (len(solvable_input) > 0 and solvable_input[0] == 'y')
+		print(f'Noted. Puzzle will{" not" if solvable == False else ""} be solvable.')
+		iterations = input(f'Dear {os.environ["USER"]}, how many times should we shuffle the puzzle? (default=1000) ')
+		try:
+			if not iterations: iterations = 0
+			iterations = int(iterations)
+		except ValueError:
+			print(f'Error. "{iterations}" is not a valid number.', file=sys.stderr)
+			sys.exit(1)
+		self.size = size
+		puzz = make_puzzle(size, solvable, iterations)
+		self.original_position = np.array(puzz, dtype=np.uint16).reshape((self.size, self.size))
+		self.set_goals()
+		print(self.original_position)
+		accepted_answer = 'newoneplease'
+		a = input(f'Dear {os.environ["USER"]}, this is the generated puzzle.\nType "{accepted_answer}" to generate a new one. ')
+		if a == accepted_answer:
+			self.create_random_state()
