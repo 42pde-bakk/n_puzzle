@@ -39,32 +39,37 @@ class TestSolvablePuzzles(unittest.TestCase):
 	algo = "astar"
 
 	def test3(self):
-		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/3.txt --greedy --algo={self.algo}'))
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/3.txt --algo={self.algo}'))
 
 	def test3_1(self):
-		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/3-1.txt --greedy --algo={self.algo}'))
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/3-1.txt --algo={self.algo}'))
 
 	def test4(self):
-		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4.txt --greedy --algo={self.algo}'))
+		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4.txt --algo={self.algo}'))
 
 
 class TestLargeSolvablePuzzles(unittest.TestCase):
 	algo = "astar"
 
 	def test4(self):
-		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4-1.txt --greedy --algo={self.algo}'))
+		if algo != "idastar":
+			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4-1.txt --greedy --algo={self.algo}'))
 
 	def test4_hard(self):
-		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4-HARD.txt --greedy --algo={self.algo}'))
+		if algo != "idastar":
+			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/4-HARD.txt --greedy --algo={self.algo}'))
 
 	def test5(self):
-		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/5.txt --greedy --algo={self.algo}'))
+		if algo != "idastar":
+			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/5.txt --greedy --algo={self.algo}'))
 
 	def test6(self):
-		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/6.txt --greedy --algo={self.algo}'))
+		if algo != "idastar":
+			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/6.txt --greedy --algo={self.algo}'))
 
 	def test7(self):
-		self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/7.txt --greedy --algo={self.algo}'))
+		if algo != "idastar":
+			self.assertEqual(0, os.system(f'python3 srcs/main.py puzzles/7.txt --greedy --algo={self.algo}'))
 
 
 if __name__ == '__main__':
