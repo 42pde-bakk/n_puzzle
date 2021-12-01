@@ -2,6 +2,9 @@ import numpy as np
 from gamestate import Gamestate
 
 
+global goaldict
+
+
 def misplaced_tiles(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> int:
 	"""Iterate through the matrix and sum the amount of tiles not in their goal position"""
 	return sum(current_matrix != goal_matrix)
@@ -51,6 +54,73 @@ def optimized_mannhattan_distance(state: Gamestate, goal_matrix: np.ndarray) -> 
 	return state.h_manhattan
 
 
+def setup_goaldict(goal_matrix: np.ndarray) -> dict:
+	return {item: (y, x) for y, row in enumerate(goal_matrix) for x, item in enumerate(row)}
+
+
+def line_conflicts(line: np.ndarray, linenb: int, xy_idx: int) -> int:
+	conflicts = 0
+	for idx, tile in enumerate(line):
+		if tile == 0:
+			continue
+		xy = goaldict[tile]
+		if linenb != xy[xy_idx]:
+			# tile is not in target row/column
+			continue
+		for k in range(idx + 1, line.size):
+			other_tile = line[k]
+			if other_tile == 0:
+				continue
+			txy = goaldict[other_tile]
+			if txy[xy_idx] != linenb:
+				# other_tile is not in its target row/column
+				continue
+			if txy[xy_idx] == xy[xy_idx] and txy[not xy_idx] <= xy[not xy_idx]:
+				# There is conflict
+				conflicts += 1
+	return conflicts
+
+
+def linear_conflicts(state: Gamestate) -> int:
+	state.h_linearconflict = 0
+	for i in range(state.size):
+		rowval = line_conflicts(state.rows[i], i, 0)  # row
+		colval = line_conflicts(state.rows[:, i], i, 1)  # col
+		state.h_linearconflict += rowval + colval
+	return state.h_linearconflict
+
+
+def optimized_linear_conflicts(state: Gamestate) -> int:
+	state.h_linearconflict = state.parent.h_linearconflict
+	p0 = state.parent.zero_pos  # x, y
+	c0 = state.zero_pos  # x, y
+	# for i in range(state.size):
+	# 	print(state.parent.rows[i], ' => ', state.rows[i])
+	# print()
+
+	# print(f'p0={p0}, c0={c0}')
+	if p0[0] == c0[0]:
+		# the empty tile was moved along the column
+		for linenb in [p0[1], c0[1]]:
+			# print(f'recalculating row {linenb}')
+			oldval = line_conflicts(state.parent.rows[linenb], linenb, 0)
+			newval = line_conflicts(state.rows[linenb], linenb, 0)
+			# print(f'old = {oldval}, new = {newval}')
+			state.h_linearconflict -= oldval
+			state.h_linearconflict += newval
+	else:
+		# the empty tile was moved along the row
+		for linenb in [p0[0], c0[0]]:
+			# print(f'recalculating column {linenb}')
+			oldval = line_conflicts(state.parent.rows[:, linenb], linenb, 1)
+			newval = line_conflicts(state.rows[:, linenb], linenb, 1)
+			state.h_linearconflict -= oldval
+			state.h_linearconflict += newval
+	# print(f'parent had value {state.parent.h_linearconflict}, son had value {state.h_linearconflict}')
+	# exit(1)
+	return state.h_linearconflict
+
+
 def get_weight(puzzle_size: int) -> float:
 	if puzzle_size <= 4:
 		return 0.1
@@ -98,45 +168,6 @@ def optimized_weighted_mannhattan_distance(state: Gamestate, goal_matrix: np.nda
 	return state.h_weighted_manhattan
 
 
-# noinspection PyTypeChecker
-def incorrectlines(state: Gamestate, goal_matrix: np.ndarray) -> int:
-	"""Return the amount of incorrect lines (rows and columns) in the puzzle"""
-	state.h_incorrectlines = 0
-	n, _ = state.rows.shape
-	for i in range(n):
-		if sum(state.rows[i, :] == goal_matrix[i, :]) != n:
-			state.h_incorrectlines += 1
-		if sum(state.rows[:, i] == goal_matrix[:, i]) != n:
-			state.h_incorrectlines += 1
-	return state.h_incorrectlines
-
-
-# noinspection PyTypeChecker
-def optimized_incorrectlines(state: Gamestate, goal_matrix: np.ndarray) -> int:
-	n = Gamestate.size
-	state.h_incorrectlines = state.parent.h_incorrectlines
-	current_emptytile_pos = state.zero_pos
-	parent_emptytile_pos = state.parent.zero_pos
-
-	if sum(state.parent.rows[parent_emptytile_pos[0], :] == goal_matrix[parent_emptytile_pos[0], :]) != n:
-		state.h_incorrectlines -= 1  # Check the parent's row that contained the empty tile
-	if sum(state.parent.rows[:, parent_emptytile_pos[1]] == goal_matrix[:, parent_emptytile_pos[1]]) != n:
-		state.h_incorrectlines -= 1  # Check the parent's column that contained the empty tile
-	if sum(state.parent.rows[current_emptytile_pos[0], :] == goal_matrix[current_emptytile_pos[0], :]) != n:
-		state.h_incorrectlines -= 1  # Check the parent's row that contains the empty tile in the current state
-	if sum(state.parent.rows[:, current_emptytile_pos[1]] == goal_matrix[:, current_emptytile_pos[1]]) != n:
-		state.h_incorrectlines -= 1  # Check the parent's column that contains the empty tile in the current state
-	if sum(state.rows[parent_emptytile_pos[0], :] == goal_matrix[parent_emptytile_pos[0], :]) != n:
-		state.h_incorrectlines += 1  # Check the parent's row that contained the empty tile
-	if sum(state.rows[:, parent_emptytile_pos[1]] == goal_matrix[:, parent_emptytile_pos[1]]) != n:
-		state.h_incorrectlines += 1  # Check the parent's column that contained the empty tile
-	if sum(state.rows[current_emptytile_pos[0], :] == goal_matrix[current_emptytile_pos[0], :]) != n:
-		state.h_incorrectlines += 1  # Check the parent's row that contains the empty tile in the current state
-	if sum(state.rows[:, current_emptytile_pos[1]] == goal_matrix[:, current_emptytile_pos[1]]) != n:
-		state.h_incorrectlines += 1  # Check the parent's column that contains the empty tile in the current state
-	return state.h_incorrectlines
-
-
 def euclidean_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray) -> float:
 	val = 0
 	for y, _ in enumerate(current_matrix):
@@ -161,7 +192,11 @@ def minkowski_distance(current_matrix: np.ndarray, goal_matrix: np.ndarray, p: i
 def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray, args) -> None:
 	"""Set various heuristic values in the provided Gamestate class"""
 	if not args.uniform:
+		global goaldict
+		goaldict = setup_goaldict(goal_matrix)
 		total_h = 0
+		if args.linearconflict:
+			total_h += linear_conflicts(state)
 		if args.manhattan:
 			total_h += mannhattan_distance(state, goal_matrix)
 		if args.weightedmanhattan:
@@ -172,8 +207,6 @@ def set_heuristic_values(state: Gamestate, goal_matrix: np.ndarray, args) -> Non
 			total_h += euclidean_distance(state.rows, goal_matrix)
 		if args.minkowski:
 			total_h += minkowski_distance(state.rows, goal_matrix, p=2)
-		if args.incorrectlines:
-			total_h += incorrectlines(state, goal_matrix)
 		state.h_total = total_h
 
 
@@ -181,6 +214,8 @@ def set_heuristic_values_timeoptimized(state: Gamestate, goal_matrix: np.ndarray
 	"""Set various heuristic values in the provided Gamestate class using it's parents heuristic values"""
 	if not args.uniform:
 		state.h_total = 0
+		if args.linearconflict:
+			state.h_total += optimized_linear_conflicts(state)
 		if args.manhattan:
 			state.h_total += optimized_mannhattan_distance(state, goal_matrix)
 		if args.weightedmanhattan:
@@ -191,5 +226,3 @@ def set_heuristic_values_timeoptimized(state: Gamestate, goal_matrix: np.ndarray
 			state.h_total += euclidean_distance(state.rows, goal_matrix)
 		if args.minkowski:
 			state.h_total += minkowski_distance(state.rows, goal_matrix, p=2)
-		if args.incorrectlines:
-			state.h_total += optimized_incorrectlines(state, goal_matrix)
