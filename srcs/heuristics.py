@@ -111,7 +111,7 @@ def optimized_linear_conflicts(state: Gamestate) -> int:
 
 def get_weight(puzzle_size: int) -> float:
 	if puzzle_size <= 4:
-		return 0.1
+		return 0.05
 	if puzzle_size == 5:
 		return 0.025
 	if puzzle_size == 6:
