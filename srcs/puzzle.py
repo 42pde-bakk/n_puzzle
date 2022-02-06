@@ -139,16 +139,8 @@ class Puzzle:
 
 	@staticmethod
 	def get_direction(key: int) -> Direction:
-		match key:
-			case 65:  # ARROW_UP
-				return Direction.UP
-			case 68:  # ARROW_LEFT
-				return Direction.LEFT
-			case 67:  # ARROW_RIGHT
-				return Direction.RIGHT
-			case 66:  # ARROW_DOWN
-				return Direction.DOWN
-		raise KeyError
+		dicty = {65: Direction.UP, 66: Direction.DOWN, 67: Direction.RIGHT, 68: Direction.LEFT}
+		return dicty[key]
 
 	def play_interactive(self) -> None:
 		gamestate = self.create_starting_state()
