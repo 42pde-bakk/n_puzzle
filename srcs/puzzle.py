@@ -140,17 +140,17 @@ class Puzzle:
 	@staticmethod
 	def get_direction(key: int) -> Direction:
 		match key:
-			case 72:  # ARROW_UP
+			case 65:  # ARROW_UP
 				return Direction.UP
-			case 75:  # ARROW_LEFT
+			case 68:  # ARROW_LEFT
 				return Direction.LEFT
-			case 77:  # ARROW_RIGHT
+			case 67:  # ARROW_RIGHT
 				return Direction.RIGHT
-			case 80:  # ARROW_DOWN
+			case 66:  # ARROW_DOWN
 				return Direction.DOWN
 		raise KeyError
 
-	def play_interactive(self) -> int:
+	def play_interactive(self) -> None:
 		gamestate = self.create_starting_state()
 		while not np.array_equal(gamestate.rows, self.goal_matrix):
 			print(gamestate.rows)
@@ -162,4 +162,5 @@ class Puzzle:
 				gamestate.do_move(direction)
 			except IndexError:
 				print(f'{direction} is not a legal move')
-		return 0
+		print(f'Congratulations, you completed the puzzle in {gamestate.moves} moves!')
+		exit(1)

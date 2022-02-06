@@ -1,6 +1,7 @@
 from typing import Tuple
+import enum
 import numpy as np
-from msvcrt import getch
+from readchar import readchar, readkey
 
 
 def is_even(nb: int) -> bool:
@@ -20,12 +21,12 @@ def find_pos_in_array(state: np.ndarray, value: int = 0) -> Tuple[int, int]:
 
 
 def get_keypress():
-	key = ord(getch())
-	if key in [3, 4, 27, 28]:  # 3=Ctrl+C, 4=CTRL+D, 28=CTRL+\, 27=ESC
+	key = ord(readchar())
+	if key in [3, 4, 28]:  # 3=Ctrl+C, 4=CTRL+D, 28=CTRL+\
 		raise KeyboardInterrupt
-	# elif key == 13:  # Enter
-	# 	select()
-	if key == 224:  # Special keys (arrows, f keys, ins, del, etc...)
-		key = ord(getch())
+	if key == 27:  # Special keys (arrows, f keys, ins, del, etc...)
+		key = ord(readchar())
+		if key == 91:
+			key = ord(readchar())
 		return key
 	return get_keypress()
