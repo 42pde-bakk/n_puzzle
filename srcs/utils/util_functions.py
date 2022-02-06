@@ -1,7 +1,6 @@
 from typing import Tuple
-import enum
 import numpy as np
-from readchar import readchar, readkey
+from readchar import readchar
 
 
 def is_even(nb: int) -> bool:

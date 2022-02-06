@@ -155,4 +155,4 @@ class Puzzle:
 			except IndexError:
 				print(f'{direction} is not a legal move')
 		print(f'Congratulations, you completed the puzzle in {gamestate.moves} moves!')
-		exit(1)
+		sys.exit(1)
