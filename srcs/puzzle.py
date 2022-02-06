@@ -3,8 +3,11 @@ from typing import List
 import numpy as np
 import os
 import sys
-from utils.util_functions import find_pos_in_array
-from gamestate import Gamestate
+# import tty
+# import termios
+# from msvcrt import getch
+from utils.util_functions import find_pos_in_array, get_keypress
+from gamestate import Gamestate, Direction
 from generate_puzzle import make_puzzle
 
 
@@ -133,3 +136,23 @@ class Puzzle:
 		a = input(f'Dear {os.environ["USER"]}, this is the generated puzzle.\nType "{accepted_answer}" to generate a new one. ')
 		if a == accepted_answer:
 			self.create_random_state()
+
+	@staticmethod
+	def get_direction(key: int) -> Direction:
+		dicty = {65: Direction.UP, 66: Direction.DOWN, 67: Direction.RIGHT, 68: Direction.LEFT}
+		return dicty[key]
+
+	def play_interactive(self) -> None:
+		gamestate = self.create_starting_state()
+		while not np.array_equal(gamestate.rows, self.goal_matrix):
+			print(gamestate.rows)
+			direction, key = '', get_keypress()
+			try:
+				direction = self.get_direction(key)
+				if not gamestate.is_possible(direction):
+					raise IndexError
+				gamestate.do_move(direction)
+			except IndexError:
+				print(f'{direction} is not a legal move')
+		print(f'Congratulations, you completed the puzzle in {gamestate.moves} moves!')
+		sys.exit(1)

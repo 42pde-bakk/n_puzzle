@@ -25,6 +25,7 @@ def parse_arguments():
 	parser.add_argument('--greedy', '-g', action='store_true', help='Run a greedy search. \
 		This does not take the amount of moves into account and therefore might not produce the optimal path, \
 		but will find a solution quicker!', default=False)
+	parser.add_argument('--interactive', action='store_true', help='Try to solve the puzzle yourself!', default=False)
 
 	parser.add_argument('--algo', action='store', default='astar')
 	parser.add_argument('--beamsize', action='store', default=100)
@@ -98,7 +99,10 @@ def main(args) -> int:
 		if args.cprofile:
 			pr.enable()
 		try:
-			search.solve()
+			if args.interactive:
+				puzzle.play_interactive()
+			else:
+				search.solve()
 		except KeyboardInterrupt:
 			pass
 		if args.cprofile:
@@ -107,7 +111,8 @@ def main(args) -> int:
 			stats.sort_stats('tottime').print_stats(10)
 			return 0
 
-		search.statistics.show_statistics(search.solution)
+		if not args.interactive:
+			search.statistics.show_statistics(search.solution)
 		if search.solution is not None:
 			return 0
 		print('I failed at solving the puzzle', file=sys.stderr)
