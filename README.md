@@ -17,4 +17,4 @@ pip3 install -r requirements.txt
 python3 srcs/main.py puzzles/3.txt
 ```
 
-## Project status: [![N-puzzle status](https://badge42.herokuapp.com/api/project/pde-bakk/n-puzzle)](https://github.com/JaeSeoKim/badge42)
+## Project status: [![N-puzzle status](https://github.com/42pde-bakk/42Cursus)](https://github.com/JaeSeoKim/badge42)
